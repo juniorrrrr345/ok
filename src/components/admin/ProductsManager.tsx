@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import MediaUploader from './MediaUploader';
-import CloudinaryUploader from './CloudinaryUploader';
+// CloudinaryUploader supprimé - utilise Cloudflare R2
 
 interface Product {
   _id?: string;

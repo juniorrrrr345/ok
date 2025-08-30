@@ -1,56 +1,41 @@
 import InfoPage from '@/components/InfoPage';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-import { connectToDatabase } from '@/lib/mongodb-fixed';
+// MongoDB supprimé - utilise Cloudflare D1
 
 // Force la revalidation de la page toutes les 10 secondes
 export const revalidate = 10;
 
 async function getInfoContent() {
   try {
-    const { db } = await connectToDatabase();
-    const page = await db.collection('pages').findOne({ slug: 'info' });
-    console.log('Page info trouvée:', page ? 'Oui' : 'Non');
-    
-    // Si la page n'existe pas, la créer
-    if (!page) {
-      await db.collection('pages').insertOne({
-        slug: 'info',
-        title: 'Informations',
-        content: 'Bienvenue sur la page d\'informations de FULL OPTION IDF.\n\nModifiez ce contenu depuis le panel d\'administration.',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      return 'Bienvenue sur la page d\'informations de FULL OPTION IDF.\n\nModifiez ce contenu depuis le panel d\'administration.';
-    }
-    
-    return page.content || '';
+    // Données par défaut en attendant l'implémentation Cloudflare
+    return {
+      settings: {},
+      infoPage: { title: 'Informations', content: 'Bienvenue dans notre boutique !' }
+    };
   } catch (error) {
-    console.error('Erreur chargement info:', error);
-    return '';
+    console.error('Erreur récupération contenu info:', error);
+    return {
+      settings: {},
+      infoPage: { title: 'Informations', content: 'Bienvenue dans notre boutique !' }
+    };
   }
 }
 
-export default async function InfoPageRoute() {
-  // Charger le contenu côté serveur
-  const content = await getInfoContent();
-
+export default async function InfoPageComponent() {
+  const { settings, infoPage } = await getInfoContent();
+  
   return (
     <div className="main-container">
-      {/* Overlay global toujours présent */}
       <div className="global-overlay"></div>
-      
-      {/* Contenu principal */}
       <div className="content-layer">
         <Header />
-        <div className="pt-12 sm:pt-14">
-          <div className="h-4 sm:h-6"></div>
-          <InfoPage content={content} />
-        </div>
+        <InfoPage 
+          settings={settings}
+          infoPage={infoPage}
+        />
+        <BottomNav />
       </div>
-      
-      {/* BottomNav */}
-      <BottomNav />
     </div>
   );
 }

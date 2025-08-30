@@ -1,10 +1,26 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-import { connectToDatabase } from '@/lib/mongodb-fixed';
+// MongoDB supprimé - utilise Cloudflare D1
 
 // Force la revalidation de la page toutes les 10 secondes
 export const revalidate = 10;
+
+async function getSocialData() {
+  try {
+    // Données par défaut en attendant l'implémentation Cloudflare
+    return {
+      settings: {},
+      socialLinks: []
+    };
+  } catch (error) {
+    console.error('Erreur récupération réseaux sociaux:', error);
+    return {
+      settings: {},
+      socialLinks: []
+    };
+  }
+}
 
 interface SocialLink {
   _id: string;
