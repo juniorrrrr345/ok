@@ -8,6 +8,7 @@ import ProductCard, { Product } from '../components/ProductCard';
 import ProductDetail from '../components/ProductDetail';
 import BottomNav from '../components/BottomNav';
 import contentCache from '../lib/contentCache';
+import { useAdminSync } from '../hooks/useAdminSync';
 export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState('Toutes les catégories');
   const [selectedFarm, setSelectedFarm] = useState('Toutes les farms');
@@ -100,6 +101,42 @@ export default function HomePage() {
   const [products, setProducts] = useState<Product[]>(getInitialProducts());
   const [categories, setCategories] = useState<string[]>(getInitialCategories());
   const [farms, setFarms] = useState<string[]>(getInitialFarms());
+
+  // Fonction de rechargement des données
+  const loadAllData = async () => {
+    try {
+      console.log('🔄 Rechargement données...');
+      
+      const [productsRes, categoriesRes, farmsRes] = await Promise.all([
+        fetch('/api/cloudflare/products', { cache: 'no-store' }),
+        fetch('/api/cloudflare/categories', { cache: 'no-store' }),
+        fetch('/api/cloudflare/farms', { cache: 'no-store' })
+      ]);
+
+      if (productsRes.ok) {
+        const productsData = await productsRes.json();
+        console.log('📦 Produits:', productsData.length);
+        setProducts(productsData);
+      }
+
+      if (categoriesRes.ok) {
+        const categoriesData = await categoriesRes.json();
+        console.log('🏷️ Catégories:', categoriesData.length);
+        setCategories(['Toutes les catégories', ...categoriesData.map((c: any) => c.name)]);
+      }
+
+      if (farmsRes.ok) {
+        const farmsData = await farmsRes.json();
+        console.log('🏭 Farms:', farmsData.length);
+        setFarms(['Toutes les farms', ...farmsData.map((f: any) => f.name)]);
+      }
+    } catch (error) {
+      console.error('❌ Erreur rechargement:', error);
+    }
+  };
+
+  // Synchronisation avec l'admin
+  useAdminSync(loadAllData);
 
   // CHARGEMENT INSTANTANÉ DEPUIS LE CACHE
   useEffect(() => {
