@@ -1,3 +1,5 @@
+const path = require('path')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -9,6 +11,13 @@ const nextConfig = {
   // Configuration optimisée pour Vercel
   experimental: {
     serverComponentsExternalPackages: ['mongoose']
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, './src'),
+    }
+    return config
   }
 }
 
