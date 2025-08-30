@@ -32,9 +32,18 @@ export default function SocialLinksManager() {
       const response = await fetch('/api/cloudflare/social-links');
       if (response.ok) {
         const data = await response.json();
-        setSocialLinks(data);
+        
+        // Adapter les données API (id → _id) pour compatibilité interface
+        const adaptedData = data.map((link: any) => ({
+          ...link,
+          _id: link.id?.toString() || link._id
+        }));
+        
+        console.log('🌐 Liens sociaux adaptés:', adaptedData);
+        setSocialLinks(adaptedData);
+        
         // Sauvegarder dans localStorage pour chargement instantané
-        localStorage.setItem('socialLinks', JSON.stringify(data));
+        localStorage.setItem('socialLinks', JSON.stringify(adaptedData));
       }
     } catch (error) {
       console.error('Erreur chargement liens sociaux:', error);
