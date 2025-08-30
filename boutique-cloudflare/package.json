@@ -5,34 +5,28 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node bot-mongodb-webhook.js",
+    "start": "wrangler dev",
     "start:nextjs": "next start",
     "lint": "next lint",
-    "setup-new-shop": "node scripts/duplicate-setup.js",
-    "bot": "node bot-complete.js",
-    "bot:dev": "node bot.js",
-    "bot:mongodb": "node bot-mongodb.js",
-    "bot:webhook": "node bot-webhook.js",
-    "monitor:connections": "node scripts/monitor-connections.js",
-    "fix:connections": "node scripts/fix-connections.js",
-    "bot:production": "node bot-webhook-production.js"
+    "deploy": "wrangler deploy",
+    "deploy:pages": "wrangler pages deploy .vercel/output/static --project-name=boutique-cloudflare",
+    "db:init": "wrangler d1 execute boutique-db --local --file=./schema.sql",
+    "db:migrate": "wrangler d1 migrations apply boutique-db --local",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "bot:dev": "node bot-cloudflare.js"
   },
   "dependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
     "axios": "^1.11.0",
-    "cloudinary": "^2.7.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
-    "fs-extra": "^11.2.0",
     "lucide-react": "^0.537.0",
-    "mongodb": "^6.18.0",
-    "mongoose": "^8.16.4",
-    "multer": "^2.0.2",
     "next": "14.2.30",
     "node-telegram-bot-api": "^0.66.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.5.2",
-    "sharp": "^0.34.3",
     "zustand": "^5.0.7"
   },
   "devDependencies": {
@@ -44,6 +38,7 @@
     "eslint-config-next": "14.2.30",
     "postcss": "^8",
     "tailwindcss": "^3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^3.101.0"
   }
 }
