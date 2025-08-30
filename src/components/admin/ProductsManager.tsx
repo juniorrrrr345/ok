@@ -1024,10 +1024,10 @@ export default function ProductsManager() {
                     <div className="bg-gray-800/50 border border-white/10 rounded-lg p-4 mb-3">
                       <div className="text-sm text-gray-300 mb-3 font-medium">Choisir la méthode d'upload :</div>
                       
-                      {/* Upload Cloudinary (recommandé) */}
+                      {/* Upload Cloudflare R2 (recommandé) */}
                       <div className="mb-3">
                         <div className="text-xs text-green-400 mb-2">✅ Recommandé - Hébergement cloud</div>
-                        <CloudinaryUploader
+                        <MediaUploader
                           onMediaSelected={(url, type) => {
                             if (type === 'image') {
                               updateField('image', url);
@@ -1086,10 +1086,10 @@ export default function ProductsManager() {
                     <div className="bg-gray-800/50 border border-white/10 rounded-lg p-4 mb-3">
                       <div className="text-sm text-gray-300 mb-3 font-medium">Choisir la méthode d'upload :</div>
                       
-                      {/* Upload Cloudinary (recommandé pour vidéos) */}
+                      {/* Upload Cloudflare R2 (recommandé pour vidéos) */}
                       <div className="mb-3">
                         <div className="text-xs text-green-400 mb-2">✅ Recommandé - Hébergement cloud illimité</div>
-                        <CloudinaryUploader
+                        <MediaUploader
                           onMediaSelected={(url, type) => {
                             if (type === 'video') {
                               updateField('video', url);
@@ -1320,7 +1320,7 @@ export default function ProductsManager() {
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Image du produit</label>
-                      <CloudinaryUploader
+                      <MediaUploader
                         onMediaSelected={(url, type) => {
                           if (type === 'image') {
                             updateField('image', url);
@@ -1347,7 +1347,7 @@ export default function ProductsManager() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Vidéo (optionnel)</label>
-                      <CloudinaryUploader
+                      <MediaUploader
                         onMediaSelected={(url, type) => {
                           if (type === 'video') {
                             updateField('video', url);
