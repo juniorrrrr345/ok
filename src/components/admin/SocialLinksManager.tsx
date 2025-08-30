@@ -19,8 +19,7 @@ export default function SocialLinksManager() {
     name: '',
     url: '',
     icon: '',
-    color: '#0088cc',
-    isActive: true
+    color: '#0088cc'
   });
 
   useEffect(() => {
@@ -80,7 +79,8 @@ export default function SocialLinksManager() {
         },
         body: JSON.stringify({
           ...formData,
-          color: formData.color || '#0088cc'
+          color: formData.color || '#0088cc',
+          is_active: true // Toujours actif
         }),
       });
 
@@ -255,11 +255,7 @@ export default function SocialLinksManager() {
                   </div>
                 </div>
               </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                link.isActive ? 'bg-green-600/20 text-green-400 border border-green-600/40' : 'bg-red-600/20 text-red-400 border border-red-600/40'
-              }`}>
-                {link.isActive ? '● Actif' : '○ Inactif'}
-              </span>
+
             </div>
             
             {/* Aperçu du lien */}
@@ -430,20 +426,7 @@ export default function SocialLinksManager() {
                 </div>
               </div>
 
-              {/* Statut */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Statut
-                </label>
-                <select
-                  value={formData.isActive ? 'true' : 'false'}
-                  onChange={(e) => updateFormField('isActive', e.target.value === 'true')}
-                  className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/50"
-                >
-                  <option value="true">✅ Actif (visible sur le site)</option>
-                  <option value="false">❌ Inactif (masqué)</option>
-                </select>
-              </div>
+
 
               {/* Aperçu en temps réel */}
               {formData.name && formData.icon && (
