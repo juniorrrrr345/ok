@@ -61,15 +61,21 @@ export async function PUT(
       name,
       description,
       price,
+      prices,
       category,
       farm,
       image_url,
+      image,
+      video_url,
+      video,
       images,
       stock,
       is_available,
       features,
       tags
     } = body;
+
+    console.log('📝 Données reçues pour mise à jour produit:', body);
 
     // Récupérer les IDs de catégorie et farm
     let category_id = null;
@@ -85,19 +91,42 @@ export async function PUT(
       farm_id = farmData?.id || null;
     }
 
-    const updatedProduct = await d1Client.update('products', id, {
-      name,
-      description,
-      price: parseFloat(price),
-      category_id,
-      farm_id,
-      image_url,
-      images: JSON.stringify(images || []),
-      stock: parseInt(stock),
-      is_available: Boolean(is_available),
-      features: JSON.stringify(features || []),
-      tags: JSON.stringify(tags || []),
-    });
+    // Préparer les données de mise à jour avec validation
+    const updateData: any = {};
+    
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    
+    // S'assurer que price n'est jamais null/undefined
+    if (price !== undefined && price !== null) {
+      const numPrice = parseFloat(price);
+      updateData.price = isNaN(numPrice) ? 0 : numPrice;
+    }
+    
+    // Gérer les prix par quantité
+    if (prices && Object.keys(prices).length > 0) {
+      updateData.prices = JSON.stringify(prices);
+    }
+    
+    if (category_id !== undefined) updateData.category_id = category_id;
+    if (farm_id !== undefined) updateData.farm_id = farm_id;
+    
+    // Gérer les URLs d'images/vidéos
+    const finalImageUrl = image_url || image;
+    const finalVideoUrl = video_url || video;
+    
+    if (finalImageUrl !== undefined) updateData.image_url = finalImageUrl || '';
+    if (finalVideoUrl !== undefined) updateData.video_url = finalVideoUrl || '';
+    
+    if (images !== undefined) updateData.images = JSON.stringify(images || []);
+    if (stock !== undefined) updateData.stock = parseInt(stock) || 0;
+    if (is_available !== undefined) updateData.is_available = Boolean(is_available);
+    if (features !== undefined) updateData.features = JSON.stringify(features || []);
+    if (tags !== undefined) updateData.tags = JSON.stringify(tags || []);
+
+    console.log('🗄️ Données nettoyées pour D1:', updateData);
+
+    const updatedProduct = await d1Client.update('products', id, updateData);
 
     return NextResponse.json(updatedProduct);
   } catch (error) {

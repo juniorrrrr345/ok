@@ -173,21 +173,27 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    // S'assurer que price n'est jamais null/undefined
+    const finalPrice = price !== undefined && price !== null ? parseFloat(price) : 0;
+    const validPrice = isNaN(finalPrice) ? 0 : finalPrice;
+
     const productData = {
       name,
-      description,
-      price: parseFloat(price),
+      description: description || '',
+      price: validPrice,
       prices: JSON.stringify(finalPrices),
       category_id,
       farm_id,
-      image_url: finalImageUrl,
-      video_url: finalVideoUrl,
-      images: JSON.stringify(images),
-      stock: parseInt(stock),
+      image_url: finalImageUrl || '',
+      video_url: finalVideoUrl || '',
+      images: JSON.stringify(images || []),
+      stock: parseInt(stock) || 0,
       is_available: Boolean(is_available),
-      features: JSON.stringify(features),
-      tags: JSON.stringify(tags),
+      features: JSON.stringify(features || []),
+      tags: JSON.stringify(tags || []),
     };
+
+    console.log('🗄️ Données produit pour création:', productData);
 
     const newProduct = await d1Client.create('products', productData);
     
