@@ -11,20 +11,44 @@ export default function Cart() {
   const [whatsappNumber, setWhatsappNumber] = useState('33612345678'); // Numéro par défaut
   
   useEffect(() => {
-    // Charger le numéro WhatsApp depuis les settings
-    fetch('/api/settings')
+    // Charger le numéro WhatsApp depuis les settings Cloudflare
+    fetch('/api/cloudflare/settings')
       .then(res => res.json())
       .then(data => {
-        if (data.whatsappNumber) {
-          // Nettoyer le numéro (enlever espaces, tirets, etc.)
+        console.log('📱 Settings reçus pour WhatsApp:', data);
+        
+        // Priorité 1: whatsapp_number (colonne dédiée)
+        if (data.whatsapp_number) {
+          const cleanNumber = data.whatsapp_number.replace(/[^0-9]/g, '');
+          setWhatsappNumber(cleanNumber);
+          console.log('📱 Numéro WhatsApp configuré:', cleanNumber);
+        }
+        // Priorité 2: whatsapp_link (extraire numéro du lien)
+        else if (data.whatsapp_link) {
+          const match = data.whatsapp_link.match(/wa\.me\/(\d+)/);
+          if (match) {
+            setWhatsappNumber(match[1]);
+            console.log('📱 Numéro extrait du lien:', match[1]);
+          }
+        }
+        // Priorité 3: ancien champ whatsappNumber (compatibilité)
+        else if (data.whatsappNumber) {
           const cleanNumber = data.whatsappNumber.replace(/[^0-9]/g, '');
           setWhatsappNumber(cleanNumber);
-        } else if (data.telegramUsername) {
-          // Fallback sur un numéro WhatsApp par défaut si telegram existe
-          setWhatsappNumber('33612345678');
+          console.log('📱 Numéro WhatsApp (legacy):', cleanNumber);
+        }
+        // Priorité 4: contact_info (fallback)
+        else if (data.contact_info) {
+          const numberMatch = data.contact_info.match(/(\d{10,15})/);
+          if (numberMatch) {
+            setWhatsappNumber(numberMatch[1]);
+            console.log('📱 Numéro extrait du contact:', numberMatch[1]);
+          }
         }
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.error('❌ Erreur chargement settings WhatsApp:', error);
+      });
   }, []);
   
   const handleSendOrder = async () => {
