@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20241127.0",
+    "mongodb": "^6.19.0",
+    "node-fetch": "^3.3.2",
     "wrangler": "^3.101.0"
   },
   "devDependencies": {
@@ -26,5 +28,13 @@
     "boutique"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juniorrrrr345/ok.git"
+  },
+  "bugs": {
+    "url": "https://github.com/juniorrrrr345/ok/issues"
+  },
+  "homepage": "https://github.com/juniorrrrr345/ok#readme"
 }
