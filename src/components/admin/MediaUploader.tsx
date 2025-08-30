@@ -50,7 +50,7 @@ export default function MediaUploader({
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/cloudflare/upload', {
         method: 'POST',
         body: formData,
       });
