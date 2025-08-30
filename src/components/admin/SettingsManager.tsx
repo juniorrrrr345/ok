@@ -42,7 +42,7 @@ export default function SettingsManager() {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/settings');
+      const response = await fetch('/api/cloudflare/settings');
       if (response.ok) {
         const data = await response.json();
         setSettings({
@@ -72,8 +72,8 @@ export default function SettingsManager() {
       setSaving(true);
       console.log('Tentative de sauvegarde avec:', settings);
       
-      const response = await fetch('/api/settings', {
-        method: 'POST',
+      const response = await fetch('/api/cloudflare/settings', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -323,7 +323,7 @@ export default function SettingsManager() {
                     const formData = new FormData();
                     formData.append('file', file);
                     try {
-                      const response = await fetch('/api/upload', {
+                      const response = await fetch('/api/cloudflare/upload', {
                         method: 'POST',
                         body: formData,
                       });

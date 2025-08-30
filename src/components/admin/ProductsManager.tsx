@@ -63,7 +63,7 @@ export default function ProductsManager() {
       
       // Charger les produits
       console.log('📦 Chargement des produits...');
-      const productsRes = await fetch('/api/products');
+      const productsRes = await fetch('/api/cloudflare/products');
       console.log('📦 Réponse produits:', productsRes.status);
       if (productsRes.ok) {
         const productsData = await productsRes.json();
@@ -76,7 +76,7 @@ export default function ProductsManager() {
 
       // Charger les catégories
       console.log('🏷️ Chargement des catégories...');
-      const categoriesRes = await fetch('/api/categories');
+      const categoriesRes = await fetch('/api/cloudflare/categories');
       console.log('🏷️ Réponse catégories:', categoriesRes.status);
       if (categoriesRes.ok) {
         const categoriesData = await categoriesRes.json();
@@ -89,7 +89,7 @@ export default function ProductsManager() {
 
       // Charger les farms
       console.log('🏭 Chargement des farms...');
-      const farmsRes = await fetch('/api/farms');
+      const farmsRes = await fetch('/api/cloudflare/farms');
       console.log('🏭 Réponse farms:', farmsRes.status);
       if (farmsRes.ok) {
         const farmsData = await farmsRes.json();
@@ -307,7 +307,7 @@ export default function ProductsManager() {
         promotions: finalPromotions
       };
 
-      const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products';
+      const url = editingProduct ? `/api/cloudflare/products/${editingProduct._id}` : '/api/cloudflare/products';
       const method = editingProduct ? 'PUT' : 'POST';
       
       // Vérifier la taille de la requête avant envoi
@@ -420,7 +420,7 @@ export default function ProductsManager() {
       document.body.appendChild(loadingMsg);
 
       // Envoyer la requête de suppression AVANT de mettre à jour l'interface
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await fetch(`/api/cloudflare/products/${productId}`, {
         method: 'DELETE',
       });
 
@@ -689,7 +689,7 @@ export default function ProductsManager() {
   const cleanAllPrices = async () => {
     if (confirm('Voulez-vous nettoyer tous les prix undefined/invalides dans la base de données ?')) {
       try {
-        const response = await fetch('/api/products/clean-prices', {
+        const response = await fetch('/api/cloudflare/products/clean-prices', {
           method: 'POST'
         });
         

@@ -25,7 +25,7 @@ export default function CategoriesManager() {
     try {
       setLoading(true);
       console.log('🏷️ Admin: Chargement des catégories...');
-      const response = await fetch('/api/categories');
+      const response = await fetch('/api/cloudflare/categories');
       console.log('🏷️ Admin: Réponse catégories:', response.status);
       if (response.ok) {
         const data = await response.json();
@@ -63,7 +63,7 @@ export default function CategoriesManager() {
     }
 
     try {
-      const url = editingCategory ? `/api/categories/${editingCategory._id}` : '/api/categories';
+      const url = editingCategory ? `/api/cloudflare/categories/${editingCategory._id}` : '/api/cloudflare/categories';
       const method = editingCategory ? 'PUT' : 'POST';
       
       console.log('💾 Sauvegarde catégorie:', { url, method, data: formData });
@@ -107,7 +107,7 @@ export default function CategoriesManager() {
   const handleDelete = async (categoryId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
       try {
-        const response = await fetch(`/api/categories/${categoryId}`, {
+        const response = await fetch(`/api/cloudflare/categories/${categoryId}`, {
           method: 'DELETE',
         });
 

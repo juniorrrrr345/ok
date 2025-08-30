@@ -21,7 +21,7 @@ export default function OrdersManager() {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch('/api/settings');
+      const response = await fetch('/api/cloudflare/settings');
       if (response.ok) {
         const data = await response.json();
         const link = data.whatsappLink || data.telegramOrderLink || data.telegramLink || '';
@@ -35,7 +35,7 @@ export default function OrdersManager() {
 
   const saveWhatsappLink = async () => {
     try {
-      const response = await fetch('/api/settings', {
+      const response = await fetch('/api/cloudflare/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ whatsappLink: newWhatsappLink })

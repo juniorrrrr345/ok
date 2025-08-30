@@ -25,11 +25,11 @@ export default function PagesManager() {
       console.log('📄 Chargement des pages...');
       
       const [infoRes, contactRes] = await Promise.all([
-        fetch('/api/pages/info').catch(err => {
+        fetch('/api/cloudflare/pages/info').catch(err => {
           console.error('Erreur fetch info:', err);
           return { ok: false, json: () => ({ title: 'À propos', content: '' }) };
         }),
-        fetch('/api/pages/contact').catch(err => {
+        fetch('/api/cloudflare/pages/contact').catch(err => {
           console.error('Erreur fetch contact:', err);
           return { ok: false, json: () => ({ title: 'Contact', content: '' }) };
         })
@@ -81,8 +81,8 @@ export default function PagesManager() {
       
       const page = pageContent[activeTab];
       
-      const response = await fetch(`/api/pages/${activeTab}`, {
-        method: 'POST',
+      const response = await fetch(`/api/cloudflare/pages/${activeTab}`, {
+        method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache'

@@ -30,7 +30,7 @@ export default function SocialLinksManager() {
   const loadSocialLinks = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/social-links');
+      const response = await fetch('/api/cloudflare/social-links');
       if (response.ok) {
         const data = await response.json();
         setSocialLinks(data);
@@ -70,7 +70,7 @@ export default function SocialLinksManager() {
         return;
       }
 
-      const url = editingLink ? `/api/social-links/${editingLink._id}` : '/api/social-links';
+      const url = editingLink ? `/api/cloudflare/social-links/${editingLink._id}` : '/api/cloudflare/social-links';
       const method = editingLink ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -132,7 +132,7 @@ export default function SocialLinksManager() {
         const originalLinks = [...socialLinks];
         setSocialLinks(prev => prev.filter(link => link._id !== linkId));
 
-        const response = await fetch(`/api/social-links/${linkId}`, {
+        const response = await fetch(`/api/cloudflare/social-links/${linkId}`, {
           method: 'DELETE',
         });
 

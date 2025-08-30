@@ -56,7 +56,7 @@ export default function ProductsManager() {
       
       // Charger les produits
       console.log('📦 Chargement des produits...');
-      const productsRes = await fetch('/api/products');
+      const productsRes = await fetch('/api/cloudflare/products');
       console.log('📦 Réponse produits:', productsRes.status);
       if (productsRes.ok) {
         const productsData = await productsRes.json();
@@ -66,7 +66,7 @@ export default function ProductsManager() {
 
       // Charger les catégories
       console.log('🏷️ Chargement des catégories...');
-      const categoriesRes = await fetch('/api/categories');
+      const categoriesRes = await fetch('/api/cloudflare/categories');
       console.log('🏷️ Réponse catégories:', categoriesRes.status);
       if (categoriesRes.ok) {
         const categoriesData = await categoriesRes.json();
@@ -76,7 +76,7 @@ export default function ProductsManager() {
 
       // Charger les farms
       console.log('🏭 Chargement des farms...');
-      const farmsRes = await fetch('/api/farms');
+      const farmsRes = await fetch('/api/cloudflare/farms');
       console.log('🏭 Réponse farms:', farmsRes.status);
       if (farmsRes.ok) {
         const farmsData = await farmsRes.json();
@@ -122,7 +122,7 @@ export default function ProductsManager() {
 
   const handleSave = async () => {
     try {
-      const url = editingProduct ? `/api/products/${editingProduct._id}` : '/api/products';
+      const url = editingProduct ? `/api/cloudflare/products/${editingProduct._id}` : '/api/cloudflare/products';
       const method = editingProduct ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
@@ -148,7 +148,7 @@ export default function ProductsManager() {
   const handleDelete = async (productId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
       try {
-        const response = await fetch(`/api/products/${productId}`, {
+        const response = await fetch(`/api/cloudflare/products/${productId}`, {
           method: 'DELETE',
         });
 

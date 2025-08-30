@@ -24,7 +24,7 @@ export default function FarmsManager() {
   const loadFarms = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/farms');
+      const response = await fetch('/api/cloudflare/farms');
       if (response.ok) {
         const data = await response.json();
         setFarms(data);
@@ -58,7 +58,7 @@ export default function FarmsManager() {
     }
 
     try {
-      const url = editingFarm ? `/api/farms/${editingFarm._id}` : '/api/farms';
+      const url = editingFarm ? `/api/cloudflare/farms/${editingFarm._id}` : '/api/cloudflare/farms';
       const method = editingFarm ? 'PUT' : 'POST';
       
       console.log('💾 Sauvegarde farm:', { url, method, data: formData });
@@ -102,7 +102,7 @@ export default function FarmsManager() {
   const handleDelete = async (farmId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette farm ?')) {
       try {
-        const response = await fetch(`/api/farms/${farmId}`, {
+        const response = await fetch(`/api/cloudflare/farms/${farmId}`, {
           method: 'DELETE',
         });
 
