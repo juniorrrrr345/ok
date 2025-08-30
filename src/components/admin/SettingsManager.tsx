@@ -47,7 +47,7 @@ export default function SettingsManager() {
           backgroundImage: data.background_image || data.backgroundImage || '',
           backgroundOpacity: data.background_opacity || data.backgroundOpacity || 20,
           backgroundBlur: data.background_blur || data.backgroundBlur || 5,
-          scrollingText: data.shop_description || data.scrollingText || ''
+          scrollingText: data.scrolling_text || data.scrollingText || ''
         });
         
         console.log('📝 Settings mappés pour interface:', {
@@ -99,7 +99,7 @@ export default function SettingsManager() {
                 backgroundImage: refreshedData.background_image || '',
                 backgroundOpacity: refreshedData.background_opacity || 20,
                 backgroundBlur: refreshedData.background_blur || 5,
-                scrollingText: refreshedData.shop_description || ''
+                scrollingText: refreshedData.scrolling_text || ''
               });
             }
           } catch (error) {

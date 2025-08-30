@@ -11,7 +11,7 @@ export async function GET() {
     if (!settings) {
       const defaultSettings = {
         id: 1,
-        shop_name: 'Ma Boutique',
+        shop_name: 'CALITEK',
         admin_password: 'admin123',
         background_image: '',
         background_opacity: 20,
@@ -71,7 +71,7 @@ export async function PUT(request: NextRequest) {
     if (body.backgroundImage !== undefined) updateData.background_image = body.backgroundImage;
     if (body.backgroundOpacity !== undefined) updateData.background_opacity = parseInt(body.backgroundOpacity);
     if (body.backgroundBlur !== undefined) updateData.background_blur = parseInt(body.backgroundBlur);
-    if (body.scrollingText !== undefined) updateData.contact_info = body.scrollingText;
+    if (body.scrollingText !== undefined) updateData.scrolling_text = body.scrollingText;
 
     // Champs directs
     if (body.shop_name !== undefined) updateData.shop_name = body.shop_name;

@@ -16,32 +16,44 @@ export default function Header() {
   const { getTotalItems, setIsOpen } = useCartStore();
   const totalItems = getTotalItems();
   
-  // Forcer les données du cache instantané - JAMAIS d'ancien contenu
-  // Header instantané depuis localStorage
-  const [settings, setSettings] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('adminSettings');
-        if (cached) {
-          const data = JSON.parse(cached);
-          return {
-            shopTitle: data.shopTitle || '',
-            shopSubtitle: data.shopSubtitle || '',
-            scrollingText: data.scrollingText || '',
-            bannerText: data.bannerText || '',
-            titleStyle: data.titleStyle || 'glow'
-          };
-        }
-      } catch (e) {}
-    }
-    return {
-      shopTitle: '',
-      shopSubtitle: '',
-      scrollingText: '',
-      bannerText: '',
-      titleStyle: 'glow'
-    };
+  const [settings, setSettings] = useState({
+    shopTitle: '',
+    shopSubtitle: '',
+    scrollingText: '',
+    bannerText: '',
+    titleStyle: 'glow',
+    backgroundImage: ''
   });
+
+  // Charger les settings depuis l'API Cloudflare
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('/api/cloudflare/settings');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📝 Header - Settings chargés:', data);
+          
+          setSettings({
+            shopTitle: data.shop_name || 'CALITEK',
+            shopSubtitle: data.shop_description || '',
+            scrollingText: data.scrolling_text || '',
+            bannerText: data.contact_info || '',
+            titleStyle: data.theme_color || 'glow',
+            backgroundImage: data.background_image || ''
+          });
+        }
+      } catch (error) {
+        console.error('Erreur chargement settings Header:', error);
+      }
+    };
+
+    loadSettings();
+    
+    // Recharger périodiquement pour synchronisation
+    const interval = setInterval(loadSettings, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     // Mise à jour en arrière-plan (pas prioritaire)
@@ -124,17 +136,21 @@ export default function Header() {
         </button>
         
         <div className="flex flex-col items-center justify-center">
-          <img 
-            src="https://i.imgur.com/mNencn1.png" 
-            alt={settings.shopTitle || "FULL OPTION IDF"} 
-            className="h-12 sm:h-16 md:h-20 w-auto"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.2))' }}
-          />
-          {settings.shopSubtitle && (
-            <p className="text-white/80 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] font-medium mt-1 sm:mt-2 break-words drop-shadow-sm">
-              {settings.shopSubtitle}
-            </p>
+          {settings.backgroundImage ? (
+            <img 
+              src={settings.backgroundImage} 
+              alt="CALITEK" 
+              className="h-12 sm:h-16 md:h-20 w-auto rounded-lg"
+              style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.2))' }}
+            />
+          ) : (
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">
+              CALITEK
+            </h1>
           )}
+          <p className="text-white/80 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] font-medium mt-1 sm:mt-2 break-words drop-shadow-sm">
+            Boutique Premium
+          </p>
         </div>
       </div>
     </header>

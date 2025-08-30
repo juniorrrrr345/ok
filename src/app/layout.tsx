@@ -9,12 +9,12 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'FULL OPTION IDF - Boutique en ligne',
-  description: 'FULL OPTION IDF - Votre boutique en ligne. Produits de qualité et livraison rapide.',
+  title: 'CALITEK - Boutique en ligne',
+  description: 'CALITEK - Votre boutique en ligne. Produits de qualité et livraison rapide.',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'FULL OPTION IDF'
+    title: 'CALITEK'
   },
   formatDetection: {
     telephone: false

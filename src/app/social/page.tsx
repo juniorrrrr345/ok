@@ -54,7 +54,7 @@ async function getSocialData() {
       return {
         socialLinks: [],
         settings: settings ? {
-          shopTitle: settings.shop_name || 'FULL OPTION IDF',
+          shopTitle: settings.shop_name || 'CALITEK',
           whatsappLink: settings.whatsapp_link || settings.contact_info || '#',
           email: settings.contact_info || '',
           address: settings.shop_description || '',
@@ -76,7 +76,7 @@ async function getSocialData() {
     console.log('🌐 Liens sociaux mappés:', mappedLinks);
 
     const mappedSettings = settings ? {
-      shopTitle: settings.shop_name || 'FULL OPTION IDF',
+      shopTitle: settings.shop_name || 'CALITEK',
       whatsappLink: settings.whatsapp_link || settings.contact_info || '#',
       email: settings.contact_info || '',
       address: settings.shop_description || '',
@@ -118,7 +118,7 @@ export default async function SocialPage() {
               </h1>
               <div className="w-20 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mb-4"></div>
               <p className="text-white text-base sm:text-lg max-w-xl mx-auto px-4 font-semibold bg-black/50 backdrop-blur-sm py-2 px-4 rounded-lg">
-                Rejoignez <span className="text-yellow-400">{settings?.shopTitle || 'FULL OPTION IDF'}</span> sur nos réseaux sociaux
+                Rejoignez <span className="text-yellow-400">{settings?.shopTitle || 'CALITEK'}</span> sur nos réseaux sociaux
               </p>
             </div>
 
