@@ -89,14 +89,21 @@ class CloudflareD1Client {
     
     const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`;
     
+    console.log('🔄 D1 CREATE:', { table, sql, values });
+    
     const result = await this.query(sql, values);
     
-    if (result.success) {
+    console.log('📊 D1 CREATE Result:', result);
+    
+    if (result.success !== false && result.meta?.last_row_id) {
       // Retourner l'enregistrement créé
-      return this.findOne(table, { id: result.meta?.last_row_id });
+      const newRecord = await this.findOne(table, { id: result.meta.last_row_id });
+      console.log('✅ D1 CREATE Success:', newRecord);
+      return newRecord;
     }
     
-    throw new Error('Failed to create record');
+    console.error('❌ D1 CREATE Failed:', result);
+    throw new Error(`Failed to create ${table}: ${JSON.stringify(result)}`);
   }
 
   async update(table: string, id: number, data: Record<string, any>) {

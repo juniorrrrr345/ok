@@ -65,7 +65,11 @@ export default function MediaUploader({
 
       const result = await response.json();
       console.log('✅ Upload réussi:', result);
-      onMediaSelected(result.url, result.type);
+      
+      // Déterminer le type depuis resource_type ou depuis le nom du fichier
+      const mediaType = result.resource_type === 'video' ? 'video' : 'image';
+      
+      onMediaSelected(result.url, mediaType);
       
       // Reset l'input
       event.target.value = '';
