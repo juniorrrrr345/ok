@@ -45,6 +45,11 @@ export default function Header() {
 
     loadSettings();
     
+    // Vider le cache au démarrage pour éviter les anciens contenus
+    localStorage.removeItem('adminSettings');
+    localStorage.removeItem('shopSettings');
+    sessionStorage.clear();
+    
     // Recharger périodiquement pour synchronisation
     const interval = setInterval(loadSettings, 5000);
     return () => clearInterval(interval);
