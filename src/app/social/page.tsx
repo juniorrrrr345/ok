@@ -166,23 +166,7 @@ export default async function SocialPage() {
               </div>
             )}
 
-            {/* Section contact plus visible */}
-            {settings?.whatsappLink && (
-              <div className="mt-12 sm:mt-16 text-center">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-6">
-                  <span className="text-2xl">💬</span> Besoin d&apos;aide ?
-                </h2>
-                <a
-                  href={settings.whatsappLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-3 bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-bold transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
-                  <span className="text-xl sm:text-2xl">💬</span>
-                  <span>Contactez-nous sur WhatsApp</span>
-                </a>
-              </div>
-            )}
+
           </main>
         </div>
       </div>
