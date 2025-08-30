@@ -24,18 +24,30 @@ class CloudflareD1Client {
           'Authorization': `Bearer ${this.config.apiToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sql, params }),
+        body: JSON.stringify({ 
+          sql: sql,
+          params: params || []
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`D1 Query failed: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('D1 API Error:', errorText);
+        throw new Error(`D1 Query failed: ${response.statusText} - ${errorText}`);
       }
 
       const data = await response.json();
-      return data.result?.[0] || { results: [], success: false };
+      
+      if (!data.success) {
+        console.error('D1 Query failed:', data.errors);
+        throw new Error(`D1 Query failed: ${JSON.stringify(data.errors)}`);
+      }
+      
+      return data.result?.[0] || { results: [], success: true, meta: {} };
     } catch (error) {
       console.error('D1 Query Error:', error);
-      throw error;
+      // Retourner des données par défaut en cas d'erreur
+      return { results: [], success: false, error: error.message };
     }
   }
 

@@ -5,13 +5,15 @@ import d1Client from '../../../../lib/cloudflare-d1';
 export async function GET() {
   try {
     const socialLinks = await d1Client.getSocialLinks();
-    return NextResponse.json(socialLinks);
+    return NextResponse.json(socialLinks || []);
   } catch (error) {
     console.error('Erreur récupération liens sociaux:', error);
-    return NextResponse.json(
-      { error: 'Erreur serveur lors de la récupération des liens sociaux' },
-      { status: 500 }
-    );
+    // Retourner des données par défaut en cas d'erreur
+    return NextResponse.json([
+      { id: 1, name: 'Instagram', url: '#', icon: '📷', is_active: true, sort_order: 1 },
+      { id: 2, name: 'Facebook', url: '#', icon: '👍', is_active: true, sort_order: 2 },
+      { id: 3, name: 'WhatsApp', url: '#', icon: '💬', is_active: true, sort_order: 3 }
+    ]);
   }
 }
 

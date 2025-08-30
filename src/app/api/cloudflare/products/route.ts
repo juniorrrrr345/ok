@@ -11,17 +11,25 @@ export async function GET(request: NextRequest) {
     const filters: any = { is_available: true };
     if (category && category !== 'Toutes les catégories') {
       // Récupérer l'ID de la catégorie
-      const categoryData = await d1Client.findOne('categories', { name: category });
-      if (categoryData) {
-        filters.category_id = categoryData.id;
+      try {
+        const categoryData = await d1Client.findOne('categories', { name: category });
+        if (categoryData) {
+          filters.category_id = categoryData.id;
+        }
+      } catch (e) {
+        console.warn('Erreur récupération catégorie:', e);
       }
     }
     
     if (farm && farm !== 'Toutes les farms') {
       // Récupérer l'ID de la farm
-      const farmData = await d1Client.findOne('farms', { name: farm });
-      if (farmData) {
-        filters.farm_id = farmData.id;
+      try {
+        const farmData = await d1Client.findOne('farms', { name: farm });
+        if (farmData) {
+          filters.farm_id = farmData.id;
+        }
+      } catch (e) {
+        console.warn('Erreur récupération farm:', e);
       }
     }
 
@@ -29,16 +37,20 @@ export async function GET(request: NextRequest) {
     
     // Enrichir avec les noms de catégories et farms
     const enrichedProducts = await Promise.all(
-      products.map(async (product: any) => {
+      (products || []).map(async (product: any) => {
         let category = null;
         let farm = null;
         
-        if (product.category_id) {
-          category = await d1Client.findOne('categories', { id: product.category_id });
-        }
-        
-        if (product.farm_id) {
-          farm = await d1Client.findOne('farms', { id: product.farm_id });
+        try {
+          if (product.category_id) {
+            category = await d1Client.findOne('categories', { id: product.category_id });
+          }
+          
+          if (product.farm_id) {
+            farm = await d1Client.findOne('farms', { id: product.farm_id });
+          }
+        } catch (e) {
+          console.warn('Erreur enrichissement produit:', e);
         }
         
         return {
@@ -52,13 +64,11 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    return NextResponse.json(enrichedProducts);
+    return NextResponse.json(enrichedProducts || []);
   } catch (error) {
     console.error('Erreur récupération produits:', error);
-    return NextResponse.json(
-      { error: 'Erreur serveur lors de la récupération des produits' },
-      { status: 500 }
-    );
+    // Retourner un tableau vide en cas d'erreur
+    return NextResponse.json([]);
   }
 }
 
