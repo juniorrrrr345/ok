@@ -3,8 +3,30 @@ import { useState, useEffect } from 'react';
 
 export default function TestLoading() {
   const [showLoading, setShowLoading] = useState(true);
+  const [settings, setSettings] = useState({
+    backgroundImage: '',
+    shop_name: 'CALITEK'
+  });
 
   useEffect(() => {
+    // Charger les settings pour le logo
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('/api/cloudflare/settings');
+        if (response.ok) {
+          const data = await response.json();
+          setSettings({
+            backgroundImage: data.background_image || '',
+            shop_name: data.shop_name || 'CALITEK'
+          });
+        }
+      } catch (error) {
+        console.error('Erreur chargement settings loading:', error);
+      }
+    };
+
+    loadSettings();
+
     const timer = setTimeout(() => {
       setShowLoading(false);
     }, 5000);
@@ -25,17 +47,26 @@ export default function TestLoading() {
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-2xl opacity-50 animate-pulse"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-full blur-xl opacity-30 animate-ping"></div>
                 <div className="relative z-10 w-full h-full flex items-center justify-center">
-                  <span className="text-8xl animate-bounce filter drop-shadow-2xl">🔥</span>
+                  {settings.backgroundImage ? (
+                    <img 
+                      src={settings.backgroundImage} 
+                      alt="CALITEK" 
+                      className="w-32 h-32 object-contain rounded-lg animate-pulse"
+                      style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))' }}
+                    />
+                  ) : (
+                    <span className="text-8xl animate-bounce filter drop-shadow-2xl">🔥</span>
+                  )}
                 </div>
               </div>
             </div>
             
             <h1 className="text-5xl sm:text-7xl font-black mb-2 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-transparent bg-clip-text animate-pulse">
-              FULL OPTION IDF
+              {settings.shop_name}
             </h1>
             
             <p className="text-2xl text-white/90 mb-8 font-light">
-              TEST - Nouveau chargement
+              Chargement en cours...
             </p>
             
             <div className="w-80 max-w-full mx-auto mb-8">
@@ -52,7 +83,7 @@ export default function TestLoading() {
             </div>
             
             <div className="text-white/30 text-sm">
-              <p>© 2025 JUNIOR X JBEL</p>
+              <p>© 2025 CALITEK</p>
             </div>
           </div>
         </div>

@@ -16,14 +16,8 @@ export default function Header() {
   const { getTotalItems, setIsOpen } = useCartStore();
   const totalItems = getTotalItems();
   
-  const [settings, setSettings] = useState({
-    shopTitle: '',
-    shopSubtitle: '',
-    scrollingText: '',
-    bannerText: '',
-    titleStyle: 'glow',
-    backgroundImage: ''
-  });
+  const [settings, setSettings] = useState(null); // null = pas encore chargé
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // Charger les settings depuis l'API Cloudflare
   useEffect(() => {
@@ -42,6 +36,7 @@ export default function Header() {
             titleStyle: data.theme_color || 'glow',
             backgroundImage: data.background_image || ''
           });
+          setIsLoaded(true);
         }
       } catch (error) {
         console.error('Erreur chargement settings Header:', error);
@@ -100,59 +95,64 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 w-full z-40 bg-black/40 backdrop-blur-md safe-area-padding">
-      {/* Texte défilant - depuis l'admin */}
-      {settings.scrollingText && settings.scrollingText.trim() && (
-        <div className="bg-black/30 backdrop-blur-sm text-white py-0.5 overflow-hidden relative border-b border-white/10">
-          <div className="animate-marquee whitespace-nowrap inline-block">
-            <span className="text-xs font-bold tracking-wide px-4 text-white drop-shadow-md">
-              {settings.scrollingText}
-            </span>
+      {/* N'afficher que si les données sont chargées */}
+      {isLoaded && settings && (
+        <>
+          {/* Texte défilant - depuis l'admin */}
+          {settings.scrollingText && settings.scrollingText.trim() && (
+            <div className="bg-black/30 backdrop-blur-sm text-white py-0.5 overflow-hidden relative border-b border-white/10">
+              <div className="animate-marquee whitespace-nowrap inline-block">
+                <span className="text-xs font-bold tracking-wide px-4 text-white drop-shadow-md">
+                  {settings.scrollingText}
+                </span>
+              </div>
+            </div>
+          )}
+          
+          {/* Bandeau blanc promotionnel - responsive */}
+          {settings.bannerText && settings.bannerText.trim() && (
+            <div className="bg-white/90 backdrop-blur-sm text-black py-1 sm:py-2 px-3 sm:px-4 text-center">
+              <p className="text-black text-responsive-xs font-bold tracking-wide break-words">
+                {settings.bannerText}
+              </p>
+            </div>
+          )}
+          
+          {/* Logo boutique avec bouton panier - responsive optimisé */}
+          <div className="bg-black/30 backdrop-blur-md py-2 sm:py-3 md:py-4 px-3 sm:px-4 md:px-6 text-center border-b border-white/10 relative">
+            {/* Bouton panier en position absolue */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="absolute right-3 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 sm:p-3 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/30"
+            >
+              <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
+              {totalItems > 0 && (
+                <span className="bg-green-500 text-black text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+            
+            <div className="flex flex-col items-center justify-center">
+              {settings.backgroundImage ? (
+                <img 
+                  src={settings.backgroundImage} 
+                  alt="CALITEK" 
+                  className="h-12 sm:h-16 md:h-20 w-auto rounded-lg"
+                  style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.2))' }}
+                />
+              ) : (
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">
+                  CALITEK
+                </h1>
+              )}
+              <p className="text-white/80 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] font-medium mt-1 sm:mt-2 break-words drop-shadow-sm">
+                Premium
+              </p>
+            </div>
           </div>
-        </div>
+        </>
       )}
-      
-      {/* Bandeau blanc promotionnel - responsive */}
-      {settings.bannerText && settings.bannerText.trim() && (
-        <div className="bg-white/90 backdrop-blur-sm text-black py-1 sm:py-2 px-3 sm:px-4 text-center">
-          <p className="text-black text-responsive-xs font-bold tracking-wide break-words">
-            {settings.bannerText}
-          </p>
-        </div>
-      )}
-      
-      {/* Logo boutique avec bouton panier - responsive optimisé */}
-      <div className="bg-black/30 backdrop-blur-md py-2 sm:py-3 md:py-4 px-3 sm:px-4 md:px-6 text-center border-b border-white/10 relative">
-        {/* Bouton panier en position absolue */}
-        <button
-          onClick={() => setIsOpen(true)}
-          className="absolute right-3 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 sm:p-3 rounded-lg transition-all duration-200 flex items-center gap-2 border border-white/30"
-        >
-          <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
-          {totalItems > 0 && (
-            <span className="bg-green-500 text-black text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
-              {totalItems}
-            </span>
-          )}
-        </button>
-        
-        <div className="flex flex-col items-center justify-center">
-          {settings.backgroundImage ? (
-            <img 
-              src={settings.backgroundImage} 
-              alt="CALITEK" 
-              className="h-12 sm:h-16 md:h-20 w-auto rounded-lg"
-              style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.2))' }}
-            />
-          ) : (
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white">
-              CALITEK
-            </h1>
-          )}
-          <p className="text-white/80 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] font-medium mt-1 sm:mt-2 break-words drop-shadow-sm">
-            Boutique Premium
-          </p>
-        </div>
-      </div>
     </header>
   );
 }
