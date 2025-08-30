@@ -1,0 +1,42 @@
+{
+  "name": "boutique-cloudflare",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "wrangler pages deploy .vercel/output/static --project-name=boutique-cloudflare",
+    "db:init": "wrangler d1 execute boutique-db --local --file=./schema.sql",
+    "db:migrate": "wrangler d1 migrations apply boutique-db --local",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "bot:dev": "node bot-cloudflare.js"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "lucide-react": "^0.537.0",
+    "next": "14.2.30",
+    "node-telegram-bot-api": "^0.66.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hot-toast": "^2.5.2",
+    "zustand": "^5.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.30",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5",
+    "wrangler": "^3.101.0"
+  }
+}
