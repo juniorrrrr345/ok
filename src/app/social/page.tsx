@@ -26,10 +26,17 @@ interface Settings {
 async function getSocialData() {
   try {
     // Récupérer SEULEMENT les liens actifs pour la boutique
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ok-git-main-lucas-projects-34f60a70.vercel.app';
+    
     const [socialRes, settingsRes] = await Promise.allSettled([
-      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links/active`, { cache: 'no-store' }),
-      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/settings`, { cache: 'no-store' })
+      fetch(`${baseUrl}/api/cloudflare/social-links/active`, { cache: 'no-store' }),
+      fetch(`${baseUrl}/api/cloudflare/settings`, { cache: 'no-store' })
     ]);
+
+    console.log('📡 Réponses API social:', {
+      socialStatus: socialRes.status,
+      settingsStatus: settingsRes.status
+    });
 
     const socialLinks = socialRes.status === 'fulfilled' && socialRes.value.ok 
       ? await socialRes.value.json() 
@@ -39,6 +46,8 @@ async function getSocialData() {
       ? await settingsRes.value.json() 
       : null;
 
+    console.log('🌐 Liens sociaux bruts:', socialLinks);
+
     // Mapper les données D1 vers le format attendu par la page
     const mappedLinks = socialLinks.map((link: any) => ({
       _id: link.id?.toString() || link._id,
@@ -46,9 +55,11 @@ async function getSocialData() {
       url: link.url,
       icon: link.icon || '🔗',
       color: link.color || '#3B82F6',
-      isActive: link.is_active !== false,
+      isActive: link.is_active !== false && link.is_active !== "false",
       order: link.sort_order || 0
     }));
+
+    console.log('🌐 Liens sociaux mappés:', mappedLinks);
 
     const mappedSettings = settings ? {
       shopTitle: settings.shop_name || 'FULL OPTION IDF',
