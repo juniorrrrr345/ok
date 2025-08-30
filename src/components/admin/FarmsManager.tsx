@@ -27,7 +27,15 @@ export default function FarmsManager() {
       const response = await fetch('/api/cloudflare/farms');
       if (response.ok) {
         const data = await response.json();
-        setFarms(data);
+        
+        // Adapter les données API (id → _id) pour compatibilité interface
+        const adaptedData = data.map((farm: any) => ({
+          ...farm,
+          _id: farm.id?.toString() || farm._id
+        }));
+        
+        console.log('🏭 Farms adaptées:', adaptedData);
+        setFarms(adaptedData);
       }
     } catch (error) {
       console.error('Erreur lors du chargement:', error);

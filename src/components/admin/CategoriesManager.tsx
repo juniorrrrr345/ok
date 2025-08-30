@@ -30,7 +30,15 @@ export default function CategoriesManager() {
       if (response.ok) {
         const data = await response.json();
         console.log('🏷️ Admin: Catégories chargées:', data.length);
-        setCategories(data);
+        
+        // Adapter les données API (id → _id) pour compatibilité interface
+        const adaptedData = data.map((category: any) => ({
+          ...category,
+          _id: category.id?.toString() || category._id
+        }));
+        
+        console.log('🏷️ Catégories adaptées:', adaptedData);
+        setCategories(adaptedData);
       } else {
         console.error('🏷️ Admin: Erreur HTTP:', response.status);
       }
