@@ -122,9 +122,9 @@ export default function HomePage() {
     const loadFreshData = async () => {
       try {
         const [productsRes, categoriesRes, farmsRes] = await Promise.all([
-          fetch('/api/products', { cache: 'no-store' }),
-          fetch('/api/categories', { cache: 'no-store' }),
-          fetch('/api/farms', { cache: 'no-store' })
+          fetch('/api/cloudflare/products', { cache: 'no-store' }),
+          fetch('/api/cloudflare/categories', { cache: 'no-store' }),
+          fetch('/api/cloudflare/farms', { cache: 'no-store' })
         ]);
 
         if (productsRes.ok) {

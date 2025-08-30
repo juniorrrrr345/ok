@@ -18,15 +18,15 @@ interface CachedData {
 class ContentCache {
   private data: any = {};
   private lastUpdate: number = 0;
-  private cacheDuration: number = 30000; // 30 secondes pour Cloudflare D1
+  private cacheDuration: number = 5000; // 5 secondes pour temps réel
   private isRefreshing: boolean = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
       // Charger immédiatement depuis l'API Cloudflare
       this.forceRefresh();
-      // Rafraîchir périodiquement
-      setInterval(() => this.forceRefresh(), 30000); // Toutes les 30 secondes
+      // Rafraîchir très fréquemment pour temps réel
+      setInterval(() => this.forceRefresh(), 5000); // Toutes les 5 secondes pour temps réel
     }
   }
   

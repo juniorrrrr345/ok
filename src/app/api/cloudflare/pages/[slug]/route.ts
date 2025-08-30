@@ -33,16 +33,25 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const { title, content, is_active } = body;
+    const { slug, title, content, is_active = true } = body;
+    
+    console.log('📝 PUT Page:', { slug: params.slug, title, content });
 
     // Trouver la page par slug d'abord
-    const existingPage = await d1Client.findOne('pages', { slug: params.slug });
+    let existingPage = await d1Client.findOne('pages', { slug: params.slug });
     
     if (!existingPage) {
-      return NextResponse.json(
-        { error: 'Page non trouvée' },
-        { status: 404 }
-      );
+      console.log('📄 Page non trouvée, création...');
+      // Créer la page si elle n'existe pas
+      const newPage = await d1Client.create('pages', {
+        slug: params.slug,
+        title,
+        content,
+        is_active: Boolean(is_active)
+      });
+      
+      console.log('✅ Page créée:', newPage);
+      return NextResponse.json({ success: true, data: newPage });
     }
 
     const updatedPage = await d1Client.update('pages', existingPage.id, {
@@ -51,11 +60,12 @@ export async function PUT(
       is_active: Boolean(is_active),
     });
 
-    return NextResponse.json(updatedPage);
+    console.log('✅ Page mise à jour:', updatedPage);
+    return NextResponse.json({ success: true, data: updatedPage });
   } catch (error) {
-    console.error('Erreur mise à jour page:', error);
+    console.error('❌ Erreur mise à jour page:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur' },
+      { error: 'Erreur serveur', details: error.message },
       { status: 500 }
     );
   }

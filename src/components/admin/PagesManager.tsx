@@ -88,8 +88,10 @@ export default function PagesManager() {
           'Cache-Control': 'no-cache'
         },
         body: JSON.stringify({
+          slug: activeTab,
           title: page.title,
-          content: page.content
+          content: page.content,
+          is_active: true
         })
       });
       
