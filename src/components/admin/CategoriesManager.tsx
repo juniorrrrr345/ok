@@ -246,15 +246,7 @@ export default function CategoriesManager() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                <textarea
-                  value={formData.description || ''}
-                  onChange={(e) => updateFormField('description', e.target.value)}
-                  className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-3 py-2 h-20"
-                  placeholder="Description de la catégorie..."
-                />
-              </div>
+
             </div>
 
             <div className="flex space-x-4">
