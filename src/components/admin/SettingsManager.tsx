@@ -3,12 +3,8 @@ import { useState, useEffect } from 'react';
 
 interface Settings {
   shopTitle: string;
-  shopSubtitle: string;
-  bannerText: string;
-  loadingText: string;
   whatsappLink: string;
   whatsappNumber: string;
-
   titleStyle: string;
   backgroundImage: string;
   backgroundOpacity: number;
@@ -19,12 +15,8 @@ interface Settings {
 export default function SettingsManager() {
   const [settings, setSettings] = useState<Settings>({
     shopTitle: '',
-    shopSubtitle: '',
-    bannerText: '',
-    loadingText: '',
     whatsappLink: '',
     whatsappNumber: '',
-
     titleStyle: 'glow',
     backgroundImage: '',
     backgroundOpacity: 20,
@@ -154,70 +146,7 @@ export default function SettingsManager() {
               <p>Debug: scrollingText = {settings.scrollingText || 'vide'}</p>
             </div>
           )}
-        {/* Informations générales */}
-        <div className="bg-gray-900 border border-white/20 rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center">
-            <span className="mr-2">🏪</span>
-            Informations générales
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Titre de la boutique caché - on utilise le logo maintenant
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Nom de la boutique
-              </label>
-              <input
-                type="text"
-                value={settings.shopTitle}
-                onChange={(e) => updateField('shopTitle', e.target.value)}
-                className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white"
-                placeholder="FULL OPTION IDF"
-              />
-            </div>
-            */}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Sous-titre
-              </label>
-              <input
-                type="text"
-                value={settings.shopSubtitle}
-                onChange={(e) => updateField('shopSubtitle', e.target.value)}
-                className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white"
-                placeholder="Premium Concentrés"
-              />
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Texte de chargement
-            </label>
-            <input
-              type="text"
-              value={settings.loadingText}
-              onChange={(e) => updateField('loadingText', e.target.value)}
-              className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white"
-                              placeholder="FULL OPTION IDF Chargement en cours 🚀"
-            />
-            <p className="text-xs text-gray-400 mt-1">Ce texte apparaît pendant le chargement de la boutique</p>
-          </div>
-
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Texte du bandeau promotionnel
-            </label>
-            <input
-              type="text"
-              value={settings.bannerText}
-              onChange={(e) => updateField('bannerText', e.target.value)}
-              className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white"
-              placeholder="Texte du bandeau promotionnel (optionnel)"
-            />
-          </div>
-        </div>
 
         {/* Contact et réseaux */}
         <div className="bg-gray-900 border border-white/20 rounded-xl p-6">
