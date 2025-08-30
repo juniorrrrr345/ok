@@ -54,6 +54,35 @@ export async function GET(request: NextRequest) {
         }
         
         // Adapter au format attendu par ProductCard
+        let prices = {};
+        try {
+          // Essayer de parser les prix depuis la colonne prices (JSON)
+          prices = JSON.parse(product.prices || '{}');
+          
+          // Si les prix sont vides, utiliser le prix de base
+          if (Object.keys(prices).length === 0 && product.price > 0) {
+            const basePrice = parseFloat(product.price);
+            prices = {
+              "5g": basePrice,
+              "10g": Math.round(basePrice * 1.8 * 100) / 100,
+              "25g": Math.round(basePrice * 4 * 100) / 100,
+              "50g": Math.round(basePrice * 7 * 100) / 100,
+              "100g": Math.round(basePrice * 12 * 100) / 100,
+              "200g": Math.round(basePrice * 20 * 100) / 100,
+            };
+          }
+        } catch (e) {
+          console.warn('Erreur parsing prix:', e);
+          prices = {
+            "5g": 0,
+            "10g": 0,
+            "25g": 0,
+            "50g": 0,
+            "100g": 0,
+            "200g": 0,
+          };
+        }
+
         return {
           _id: product.id?.toString() || product._id,
           name: product.name,
@@ -62,14 +91,7 @@ export async function GET(request: NextRequest) {
           farm: farm?.name || 'Sans farm',
           image: product.image_url || '',
           video: product.video_url || '',
-          prices: {
-            "5g": parseFloat(product.price) || 0,
-            "10g": parseFloat(product.price) * 1.8 || 0,
-            "25g": parseFloat(product.price) * 4 || 0,
-            "50g": parseFloat(product.price) * 7 || 0,
-            "100g": parseFloat(product.price) * 12 || 0,
-            "200g": parseFloat(product.price) * 20 || 0,
-          },
+          prices: prices,
           images: JSON.parse(product.images || '[]'),
           features: JSON.parse(product.features || '[]'),
           tags: JSON.parse(product.tags || '[]'),
@@ -95,9 +117,13 @@ export async function POST(request: NextRequest) {
       name,
       description = '',
       price = 0,
+      prices = {},
       category,
       farm,
       image_url = '',
+      image = '',
+      video_url = '',
+      video = '',
       images = [],
       stock = 0,
       is_available = true,
@@ -126,13 +152,36 @@ export async function POST(request: NextRequest) {
       farm_id = farmData?.id || null;
     }
 
+    // Utiliser image ou image_url selon ce qui est fourni
+    const finalImageUrl = image_url || image || '';
+    const finalVideoUrl = video_url || video || '';
+    
+    // Gérer les prix par quantité
+    let finalPrices = {};
+    if (Object.keys(prices).length > 0) {
+      finalPrices = prices;
+    } else if (price > 0) {
+      // Créer les prix par quantité basés sur le prix de base
+      const basePrice = parseFloat(price);
+      finalPrices = {
+        "5g": basePrice,
+        "10g": Math.round(basePrice * 1.8 * 100) / 100,
+        "25g": Math.round(basePrice * 4 * 100) / 100,
+        "50g": Math.round(basePrice * 7 * 100) / 100,
+        "100g": Math.round(basePrice * 12 * 100) / 100,
+        "200g": Math.round(basePrice * 20 * 100) / 100,
+      };
+    }
+
     const productData = {
       name,
       description,
       price: parseFloat(price),
+      prices: JSON.stringify(finalPrices),
       category_id,
       farm_id,
-      image_url,
+      image_url: finalImageUrl,
+      video_url: finalVideoUrl,
       images: JSON.stringify(images),
       stock: parseInt(stock),
       is_available: Boolean(is_available),

@@ -686,26 +686,7 @@ export default function ProductsManager() {
     });
   };
 
-  const cleanAllPrices = async () => {
-    if (confirm('Voulez-vous nettoyer tous les prix undefined/invalides dans la base de données ?')) {
-      try {
-        const response = await fetch('/api/cloudflare/products/clean-prices', {
-          method: 'POST'
-        });
-        
-        if (response.ok) {
-          const result = await response.json();
-          alert(`✅ ${result.message}`);
-          loadData(); // Recharger les données
-        } else {
-          alert('❌ Erreur lors du nettoyage');
-        }
-      } catch (error) {
-        console.error('Erreur:', error);
-        alert('❌ Erreur lors du nettoyage');
-      }
-    }
-  };
+
 
   if (loading) {
     return (
@@ -731,37 +712,12 @@ export default function ProductsManager() {
           >
             ➕ Ajouter un produit
           </button>
-          <button
-            onClick={cleanAllPrices}
-            className="bg-yellow-600/10 border border-yellow-500/20 hover:bg-yellow-600/20 text-yellow-300 font-bold py-3 px-6 rounded-xl transition-all duration-300 backdrop-blur-sm shadow-lg hover:scale-[1.02] w-full sm:w-auto"
-          >
-            🧹 Nettoyer les prix
-          </button>
+
         </div>
         </div>
       </div>
 
-      {/* Alerte pour les prix problématiques */}
-      {products.some(p => Object.values(p.prices || {}).some(price => !price || isNaN(Number(price)) || Number(price) <= 0)) && (
-        <div className="bg-red-900/20 border border-red-400/20 rounded-xl p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="text-red-400 text-xl">⚠️</div>
-            <div>
-              <h3 className="text-red-400 font-bold">Problème détecté avec les prix</h3>
-              <p className="text-red-300 text-sm">
-                Certains produits ont des prix invalides (null, undefined, 0 ou non-numériques). 
-                Utilisez le bouton "🧹 Nettoyer les prix" pour résoudre automatiquement ces problèmes.
-              </p>
-            </div>
-            <button
-              onClick={cleanAllPrices}
-              className="bg-red-600/20 border border-red-400/30 hover:bg-red-600/30 text-red-300 font-bold py-2 px-4 rounded-lg transition-all duration-200 whitespace-nowrap"
-            >
-              🧹 Nettoyer maintenant
-            </button>
-          </div>
-        </div>
-      )}
+
 
       {/* Grid de produits - Plus compact */}
       {products.length === 0 ? (
@@ -1031,6 +987,7 @@ export default function ProductsManager() {
                           onMediaSelected={(url, type) => {
                             if (type === 'image') {
                               updateField('image', url);
+                              updateField('image_url', url);
                             }
                           }}
                           acceptedTypes="image/*"
@@ -1045,6 +1002,7 @@ export default function ProductsManager() {
                           onMediaSelected={(url, type) => {
                             if (type === 'image') {
                               updateField('image', url);
+                              updateField('image_url', url);
                             }
                           }}
                           acceptedTypes="image/*"
@@ -1093,6 +1051,7 @@ export default function ProductsManager() {
                           onMediaSelected={(url, type) => {
                             if (type === 'video') {
                               updateField('video', url);
+                              updateField('video_url', url);
                             }
                           }}
                           acceptedTypes="video/*,.mov,.avi,.3gp"
@@ -1107,6 +1066,7 @@ export default function ProductsManager() {
                           onMediaSelected={(url, type) => {
                             if (type === 'video') {
                               updateField('video', url);
+                              updateField('video_url', url);
                             }
                           }}
                           acceptedTypes="video/*"
