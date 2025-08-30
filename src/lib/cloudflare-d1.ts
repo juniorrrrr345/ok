@@ -204,9 +204,26 @@ class CloudflareD1Client {
   }
 
   async delete(table: string, id: number) {
-    const sql = `DELETE FROM ${table} WHERE id = ?`;
-    const result = await this.query(sql, [id]);
-    return result.success;
+    try {
+      const sql = `DELETE FROM ${table} WHERE id = ?`;
+      
+      console.log('🗑️ D1 DELETE:', { table, id, sql });
+      
+      const result = await this.query(sql, [id]);
+      
+      console.log('📊 D1 DELETE Result:', result);
+      
+      if (result.success !== false) {
+        console.log('✅ D1 DELETE Success');
+        return true;
+      }
+      
+      console.error('❌ D1 DELETE Failed:', result);
+      return false;
+    } catch (error) {
+      console.error('❌ D1 DELETE Error:', error);
+      return false;
+    }
   }
 
   // Méthodes spécifiques pour les modèles de la boutique

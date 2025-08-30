@@ -119,6 +119,15 @@ export default function FarmsManager() {
         if (response.ok) {
           console.log('✅ Farm supprimée avec succès');
           
+          // Vider le localStorage pour forcer le rechargement
+          localStorage.removeItem('farms');
+          localStorage.removeItem('adminData');
+          
+          // Recharger les données depuis l'API après suppression
+          setTimeout(() => {
+            loadFarms();
+          }, 500);
+          
           // Afficher message de succès
           const successMsg = document.createElement('div');
           successMsg.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-[9999]';
