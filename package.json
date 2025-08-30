@@ -1,0 +1,30 @@
+{
+  "name": "boutique-cloudflare",
+  "version": "1.0.0",
+  "description": "Boutique e-commerce sur Cloudflare (D1, R2, Workers) - Remplace MongoDB et Cloudinary",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler build",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute boutique --file=./schema.sql",
+    "db:migrate": "wrangler d1 migrations apply boutique"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "wrangler": "^3.101.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "r2",
+    "ecommerce",
+    "boutique"
+  ],
+  "author": "",
+  "license": "MIT"
+}
