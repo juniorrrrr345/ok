@@ -37,19 +37,23 @@ export default function SettingsManager() {
       const response = await fetch('/api/cloudflare/settings');
       if (response.ok) {
         const data = await response.json();
+        console.log('📝 Settings reçus depuis API:', data);
+        
         setSettings({
-          shopTitle: data.shopTitle || '',
-          shopSubtitle: data.shopSubtitle || '',
-          bannerText: data.bannerText || '',
-          loadingText: data.loadingText || '',
-          whatsappLink: data.whatsappLink || data.telegramLink || '',
-          whatsappNumber: data.whatsappNumber || data.telegramUsername?.replace('@', '') || '',
-
-          titleStyle: data.titleStyle || 'glow',
-          backgroundImage: data.backgroundImage || '',
-          backgroundOpacity: data.backgroundOpacity || 20,
-          backgroundBlur: data.backgroundBlur || 5,
-          scrollingText: data.scrollingText || ''
+          shopTitle: data.shop_name || data.shopTitle || '',
+          whatsappLink: data.whatsapp_link || data.contact_info || data.whatsappLink || '',
+          whatsappNumber: data.whatsapp_number || data.whatsappNumber || '',
+          titleStyle: data.theme_color || data.titleStyle || 'glow',
+          backgroundImage: data.background_image || data.backgroundImage || '',
+          backgroundOpacity: data.background_opacity || data.backgroundOpacity || 20,
+          backgroundBlur: data.background_blur || data.backgroundBlur || 5,
+          scrollingText: data.shop_description || data.scrollingText || ''
+        });
+        
+        console.log('📝 Settings mappés pour interface:', {
+          whatsappLink: data.whatsapp_link || data.contact_info,
+          backgroundImage: data.background_image || data.backgroundImage,
+          titleStyle: data.theme_color || data.titleStyle
         });
       }
     } catch (error) {
