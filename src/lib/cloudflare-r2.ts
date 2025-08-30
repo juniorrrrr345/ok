@@ -149,7 +149,7 @@ const r2Client = new CloudflareR2Client({
   accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '',
   secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',
   bucketName: process.env.CLOUDFLARE_R2_BUCKET_NAME || 'boutique-images',
-  publicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL,
+  publicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL || 'https://pub-b38679a01a274648827751df94818418.r2.dev',
 });
 
 export default r2Client;

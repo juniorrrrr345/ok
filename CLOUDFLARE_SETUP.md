@@ -18,7 +18,7 @@ ADMIN_PASSWORD=your_secure_admin_password
 
 ### **Variables optionnelles :**
 ```bash
-CLOUDFLARE_R2_PUBLIC_URL=https://your-custom-domain.com
+CLOUDFLARE_R2_PUBLIC_URL=https://pub-b38679a01a274648827751df94818418.r2.dev
 NEXT_PUBLIC_SITE_URL=https://your-domain.vercel.app
 NODE_ENV=production
 ```
