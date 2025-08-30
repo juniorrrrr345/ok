@@ -41,8 +41,7 @@ export default async function InfoPageComponent() {
       <div className="content-layer">
         <Header />
         <InfoPage 
-          settings={settings}
-          infoPage={infoPage}
+          content={infoPage?.content || 'Aucun contenu disponible'}
         />
         <BottomNav />
       </div>

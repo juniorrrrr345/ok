@@ -25,9 +25,9 @@ interface Settings {
 
 async function getSocialData() {
   try {
-    // Récupérer depuis Cloudflare D1 via les API
+    // Récupérer SEULEMENT les liens actifs pour la boutique
     const [socialRes, settingsRes] = await Promise.allSettled([
-      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links`, { cache: 'no-store' }),
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links/active`, { cache: 'no-store' }),
       fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/settings`, { cache: 'no-store' })
     ]);
 

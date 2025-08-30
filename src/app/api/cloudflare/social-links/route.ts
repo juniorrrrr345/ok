@@ -4,16 +4,16 @@ import d1Client from '../../../../lib/cloudflare-d1';
 // GET - Récupérer tous les liens sociaux
 export async function GET() {
   try {
-    const socialLinks = await d1Client.getSocialLinks();
-    return NextResponse.json(socialLinks || []);
+    // Pour l'admin : récupérer TOUS les liens (actifs et inactifs)
+    const allLinks = await d1Client.findMany('social_links', {}, 'sort_order ASC');
+    
+    console.log('🌐 Liens sociaux récupérés:', allLinks);
+    
+    return NextResponse.json(allLinks || []);
   } catch (error) {
     console.error('Erreur récupération liens sociaux:', error);
-    // Retourner des données par défaut en cas d'erreur
-    return NextResponse.json([
-      { id: 1, name: 'Instagram', url: '#', icon: '📷', is_active: true, sort_order: 1 },
-      { id: 2, name: 'Facebook', url: '#', icon: '👍', is_active: true, sort_order: 2 },
-      { id: 3, name: 'WhatsApp', url: '#', icon: '💬', is_active: true, sort_order: 3 }
-    ]);
+    // Retourner un tableau vide en cas d'erreur
+    return NextResponse.json([]);
   }
 }
 

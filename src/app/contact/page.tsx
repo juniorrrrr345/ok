@@ -12,7 +12,7 @@ async function getContactData() {
     const [settingsRes, pageRes, socialRes] = await Promise.allSettled([
       fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/settings`, { cache: 'no-store' }),
       fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/pages/contact`, { cache: 'no-store' }),
-      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links`, { cache: 'no-store' })
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links/active`, { cache: 'no-store' })
     ]);
 
     const settings = settingsRes.status === 'fulfilled' && settingsRes.value.ok 
@@ -47,9 +47,9 @@ export default async function ContactPageComponent() {
       <div className="content-layer">
         <Header />
         <ContactPage 
-          settings={settings}
-          contactPage={contactPage}
-          socialLinks={socialLinks}
+          content={contactPage?.content || 'Aucun contenu disponible'}
+          whatsappLink={settings?.contact_info || '#'}
+          socialLinks={socialLinks || []}
         />
         <BottomNav />
       </div>
