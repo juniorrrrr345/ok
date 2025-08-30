@@ -1,4 +1,6 @@
-// Cache global pour avoir les données admin instantanément disponibles
+// Cache global optimisé pour Cloudflare D1
+import d1Client from './cloudflare-d1';
+
 interface CachedData {
   settings?: any;
   infoPage?: any;
@@ -16,182 +18,147 @@ interface CachedData {
 class ContentCache {
   private data: any = {};
   private lastUpdate: number = 0;
-  private cacheDuration: number = 500; // 0.5 seconde pour synchronisation ultra rapide
+  private cacheDuration: number = 30000; // 30 secondes pour Cloudflare D1
   private isRefreshing: boolean = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
-      // Charger immédiatement depuis l'API
+      // Charger immédiatement depuis l'API Cloudflare
       this.forceRefresh();
-      // Rafraîchir très fréquemment
-      setInterval(() => this.forceRefresh(), 500); // Toutes les 0.5 secondes
+      // Rafraîchir périodiquement
+      setInterval(() => this.forceRefresh(), 30000); // Toutes les 30 secondes
     }
   }
   
-  private async forceRefresh() {
+  async initialize() {
+    if (this.needsRefresh()) {
+      await this.forceRefresh();
+    }
+  }
+
+  needsRefresh(): boolean {
+    return Date.now() - this.lastUpdate > this.cacheDuration;
+  }
+
+  async forceRefresh() {
     if (this.isRefreshing) return;
-    this.isRefreshing = true;
     
+    this.isRefreshing = true;
     try {
-      // Charger TOUT depuis l'API en parallèle
-      const [products, categories, farms, settings, socialLinks] = await Promise.all([
-        fetch('/api/products', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
-        fetch('/api/categories', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
-        fetch('/api/farms', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
-        fetch('/api/settings', { cache: 'no-store' }).then(r => r.ok ? r.json() : {}),
-        fetch('/api/social-links', { cache: 'no-store' }).then(r => r.ok ? r.json() : [])
+      console.log('🔄 Rafraîchissement cache Cloudflare D1...');
+      
+      // Charger depuis les routes API Cloudflare
+      const [settingsRes, productsRes, categoriesRes, farmsRes, socialLinksRes, pagesRes] = await Promise.allSettled([
+        fetch('/api/cloudflare/settings').then(r => r.ok ? r.json() : null),
+        fetch('/api/cloudflare/products').then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/categories').then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/farms').then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/social-links').then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/pages').then(r => r.ok ? r.json() : [])
       ]);
-      
-      // Mettre à jour le cache ET localStorage
-      this.data = { products, categories, farms, settings, socialLinks };
-      
-      // Sauvegarder dans localStorage pour affichage instantané
-      localStorage.setItem('products', JSON.stringify(products));
-      localStorage.setItem('categories', JSON.stringify(categories));
-      localStorage.setItem('farms', JSON.stringify(farms));
-      localStorage.setItem('shopSettings', JSON.stringify(settings));
-      localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
-      
-      // Émettre un événement pour notifier les composants
-      window.dispatchEvent(new CustomEvent('cacheUpdated', { detail: this.data }));
-      
+
+      // Extraire les résultats
+      const settings = settingsRes.status === 'fulfilled' ? settingsRes.value : this.getDefaultSettings();
+      const products = productsRes.status === 'fulfilled' ? productsRes.value : [];
+      const categories = categoriesRes.status === 'fulfilled' ? categoriesRes.value : [];
+      const farms = farmsRes.status === 'fulfilled' ? farmsRes.value : [];
+      const socialLinks = socialLinksRes.status === 'fulfilled' ? socialLinksRes.value : [];
+      const pages = pagesRes.status === 'fulfilled' ? pagesRes.value : [];
+
+      // Organiser les pages
+      const infoPage = pages.find((p: any) => p.slug === 'info') || { title: 'Informations', content: 'Bienvenue dans notre boutique !' };
+      const contactPage = pages.find((p: any) => p.slug === 'contact') || { title: 'Contact', content: 'Contactez-nous pour toute question.' };
+
+      this.data = {
+        settings,
+        products,
+        categories,
+        farms,
+        socialLinks,
+        infoPage,
+        contactPage,
+        pages: {
+          info: infoPage,
+          contact: contactPage
+        }
+      };
+
+      this.lastUpdate = Date.now();
+      console.log('✅ Cache Cloudflare D1 mis à jour');
     } catch (error) {
-      console.log('Erreur refresh cache:', error);
+      console.error('❌ Erreur refresh cache D1:', error);
+      // Garder les données existantes en cas d'erreur
     } finally {
       this.isRefreshing = false;
     }
   }
 
-  // Obtenir les settings instantanément - TOUJOURS depuis l'API admin
+  getDefaultSettings() {
+    return {
+      shopName: 'Ma Boutique',
+      shopDescription: 'Boutique en ligne moderne',
+      backgroundImage: '',
+      backgroundOpacity: 20,
+      backgroundBlur: 5,
+      themeColor: '#000000',
+      contactInfo: 'Contactez-nous pour plus d\'informations',
+      loadingEnabled: true,
+      loadingDuration: 3000
+    };
+  }
+
+  // Getters pour accéder aux données
   getSettings() {
-    // Retourner null si pas de données admin pour forcer le chargement depuis l'API
-    return this.data.settings || null;
+    return this.data.settings || this.getDefaultSettings();
   }
 
-  // Obtenir le contenu info instantanément - TOUJOURS depuis cache frais
-  getInfoContent() {
-    return this.data.infoPage?.content || null; // Retourner null si pas de données admin
-  }
-
-  // Obtenir le contenu contact instantanément - TOUJOURS depuis cache frais
-  getContactContent() {
-    return this.data.contactPage?.content || null; // Retourner null si pas de données admin
-  }
-
-  // Obtenir les produits instantanément
   getProducts() {
     return this.data.products || [];
   }
 
-  // Obtenir les catégories instantanément
   getCategories() {
     return this.data.categories || [];
   }
 
-  // Obtenir les farms instantanément
   getFarms() {
     return this.data.farms || [];
   }
 
-  // Obtenir les liens sociaux
   getSocialLinks() {
     return this.data.socialLinks || [];
   }
 
-  // Getters pour les pages
   getInfoPage() {
-    return this.data.pages?.info || null;
+    return this.data.infoPage || { title: 'Informations', content: 'Bienvenue dans notre boutique !' };
   }
 
   getContactPage() {
-    return this.data.pages?.contact || null;
+    return this.data.contactPage || { title: 'Contact', content: 'Contactez-nous pour toute question.' };
   }
 
-  // Updaters pour les pages
-  updateInfoPage(page: { title: string; content: string }) {
-    if (!this.data.pages) {
-      this.data.pages = {};
-    }
-    this.data.pages.info = page;
-    // Sauvegarder aussi dans localStorage séparément pour chargement instantané
-    try {
-      localStorage.setItem('infoPage', JSON.stringify(page));
-    } catch (e) {}
+  getPages() {
+    return this.data.pages || {
+      info: this.getInfoPage(),
+      contact: this.getContactPage()
+    };
   }
 
-  updateContactPage(page: { title: string; content: string }) {
-    if (!this.data.pages) {
-      this.data.pages = {};
-    }
-    this.data.pages.contact = page;
-    // Sauvegarder aussi dans localStorage séparément pour chargement instantané
-    try {
-      localStorage.setItem('contactPage', JSON.stringify(page));
-    } catch (e) {}
+  // Méthodes pour invalider le cache
+  invalidateSettings() {
+    delete this.data.settings;
   }
 
-
-
-  updateSettings(settings: any) {
-    this.data.settings = settings;
-    // Sauvegarder aussi dans localStorage séparément pour chargement instantané
-    try {
-      localStorage.setItem('shopSettings', JSON.stringify(settings));
-    } catch (e) {}
+  invalidateProducts() {
+    delete this.data.products;
   }
 
-  updateProducts(products: any[]) {
-    this.data.products = products;
-    // Sauvegarder aussi dans localStorage séparément pour chargement instantané
-    try {
-      localStorage.setItem('products', JSON.stringify(products));
-    } catch (e) {}
-  }
-
-  updateCategories(categories: any[]) {
-    this.data.categories = categories;
-    // Sauvegarder aussi dans localStorage séparément pour chargement instantané
-    try {
-      localStorage.setItem('categories', JSON.stringify(categories));
-    } catch (e) {}
-  }
-
-  updateFarms(farms: any[]) {
-    this.data.farms = farms;
-    // Sauvegarder aussi dans localStorage séparément pour chargement instantané
-    try {
-      localStorage.setItem('farms', JSON.stringify(farms));
-    } catch (e) {}
-  }
-
-  // Invalidate cache - force une nouvelle récupération IMMÉDIATE
-  invalidate() {
-    console.log('♻️ CACHE INVALIDÉ - Prochaine requête sera ultra-fraîche');
+  invalidateAll() {
+    this.data = {};
     this.lastUpdate = 0;
-    this.data = {}; // Vider complètement les données
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('contentCache');
-    }
-  }
-
-  // Obtenir le timestamp de la dernière mise à jour
-  getLastUpdate() {
-    return this.lastUpdate;
-  }
-
-  // Vérifier si le cache est frais
-  isFresh() {
-    return (Date.now() - this.lastUpdate) < this.cacheDuration;
   }
 }
 
-// Instance singleton
+// Instance globale
 const contentCache = new ContentCache();
-
-// Export pour compatibilité avec l'ancien code
-export const instantContent = contentCache;
-
-// Export nommé pour la route API
-export { contentCache };
-
 export default contentCache;
+export { contentCache };
