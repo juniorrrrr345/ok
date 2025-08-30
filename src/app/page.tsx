@@ -135,8 +135,10 @@ export default function HomePage() {
 
         if (categoriesRes.ok) {
           const categoriesData = await categoriesRes.json();
-          setCategories(['Toutes les catégories', ...categoriesData.map((c: any) => c.name)]);
-          contentCache.updateCategories(categoriesData);
+          console.log('🏷️ Catégories reçues:', categoriesData);
+          const categoryNames = ['Toutes les catégories', ...categoriesData.map((c: any) => c.name)];
+          console.log('🏷️ Noms catégories:', categoryNames);
+          setCategories(categoryNames);
         }
 
         if (farmsRes.ok) {

@@ -57,69 +57,150 @@ class CloudflareD1Client {
 
   // Méthodes utilitaires pour les opérations CRUD
   async findOne(table: string, where: Record<string, any> = {}) {
-    const whereClause = Object.keys(where).length > 0 
-      ? `WHERE ${Object.keys(where).map(key => `${key} = ?`).join(' AND ')}`
-      : '';
-    
-    const sql = `SELECT * FROM ${table} ${whereClause} LIMIT 1`;
-    const params = Object.values(where);
-    
-    const result = await this.query(sql, params);
-    return result.results?.[0] || null;
+    try {
+      if (!where || typeof where !== 'object') {
+        console.warn('⚠️ findOne: where clause invalid:', where);
+        where = {};
+      }
+
+      const whereKeys = Object.keys(where);
+      const whereClause = whereKeys.length > 0 
+        ? `WHERE ${whereKeys.map(key => `${key} = ?`).join(' AND ')}`
+        : '';
+      
+      const sql = `SELECT * FROM ${table} ${whereClause} LIMIT 1`;
+      const params = Object.values(where);
+      
+      console.log('🔍 findOne SQL:', { table, sql, params });
+      
+      const result = await this.query(sql, params);
+      const record = result.results?.[0] || null;
+      
+      console.log('📊 findOne result:', record);
+      return record;
+    } catch (error) {
+      console.error('❌ findOne error:', error);
+      return null;
+    }
   }
 
   async findMany(table: string, where: Record<string, any> = {}, orderBy?: string) {
-    const whereClause = Object.keys(where).length > 0 
-      ? `WHERE ${Object.keys(where).map(key => `${key} = ?`).join(' AND ')}`
-      : '';
-    
-    const orderClause = orderBy ? `ORDER BY ${orderBy}` : '';
-    
-    const sql = `SELECT * FROM ${table} ${whereClause} ${orderClause}`;
-    const params = Object.values(where);
-    
-    const result = await this.query(sql, params);
-    return result.results || [];
+    try {
+      if (!where || typeof where !== 'object') {
+        console.warn('⚠️ findMany: where clause invalid:', where);
+        where = {};
+      }
+
+      const whereKeys = Object.keys(where);
+      const whereClause = whereKeys.length > 0 
+        ? `WHERE ${whereKeys.map(key => `${key} = ?`).join(' AND ')}`
+        : '';
+      
+      const orderClause = orderBy ? `ORDER BY ${orderBy}` : '';
+      
+      const sql = `SELECT * FROM ${table} ${whereClause} ${orderClause}`;
+      const params = Object.values(where);
+      
+      console.log('🔍 findMany SQL:', { table, sql, params });
+      
+      const result = await this.query(sql, params);
+      const records = result.results || [];
+      
+      console.log('📊 findMany result:', records.length, 'records');
+      return records;
+    } catch (error) {
+      console.error('❌ findMany error:', error);
+      return [];
+    }
   }
 
   async create(table: string, data: Record<string, any>) {
-    const keys = Object.keys(data);
-    const values = Object.values(data);
-    const placeholders = keys.map(() => '?').join(', ');
-    
-    const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`;
-    
-    console.log('🔄 D1 CREATE:', { table, sql, values });
-    
-    const result = await this.query(sql, values);
-    
-    console.log('📊 D1 CREATE Result:', result);
-    
-    if (result.success !== false && result.meta?.last_row_id) {
-      // Retourner l'enregistrement créé
-      const newRecord = await this.findOne(table, { id: result.meta.last_row_id });
-      console.log('✅ D1 CREATE Success:', newRecord);
-      return newRecord;
+    try {
+      if (!data || typeof data !== 'object') {
+        throw new Error('Data must be a valid object');
+      }
+
+      // Filtrer les valeurs null/undefined
+      const cleanData: Record<string, any> = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== null && value !== undefined) {
+          cleanData[key] = value;
+        }
+      }
+
+      const keys = Object.keys(cleanData);
+      const values = Object.values(cleanData);
+      
+      if (keys.length === 0) {
+        throw new Error('No valid data to insert');
+      }
+
+      const placeholders = keys.map(() => '?').join(', ');
+      const sql = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`;
+      
+      console.log('🔄 D1 CREATE:', { table, sql, values });
+      
+      const result = await this.query(sql, values);
+      
+      console.log('📊 D1 CREATE Result:', result);
+      
+      if (result.success !== false && result.meta?.last_row_id) {
+        // Retourner l'enregistrement créé
+        const newRecord = await this.findOne(table, { id: result.meta.last_row_id });
+        console.log('✅ D1 CREATE Success:', newRecord);
+        return newRecord;
+      }
+      
+      console.error('❌ D1 CREATE Failed:', result);
+      throw new Error(`Failed to create ${table}: ${JSON.stringify(result)}`);
+    } catch (error) {
+      console.error('❌ D1 CREATE Error:', error);
+      throw error;
     }
-    
-    console.error('❌ D1 CREATE Failed:', result);
-    throw new Error(`Failed to create ${table}: ${JSON.stringify(result)}`);
   }
 
   async update(table: string, id: number, data: Record<string, any>) {
-    const keys = Object.keys(data);
-    const values = Object.values(data);
-    const setClause = keys.map(key => `${key} = ?`).join(', ');
-    
-    const sql = `UPDATE ${table} SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-    
-    const result = await this.query(sql, [...values, id]);
-    
-    if (result.success) {
-      return this.findOne(table, { id });
+    try {
+      if (!data || typeof data !== 'object') {
+        throw new Error('Data must be a valid object');
+      }
+
+      // Filtrer les valeurs null/undefined
+      const cleanData: Record<string, any> = {};
+      for (const [key, value] of Object.entries(data)) {
+        if (value !== null && value !== undefined) {
+          cleanData[key] = value;
+        }
+      }
+
+      const keys = Object.keys(cleanData);
+      const values = Object.values(cleanData);
+      
+      if (keys.length === 0) {
+        throw new Error('No valid data to update');
+      }
+
+      const setClause = keys.map(key => `${key} = ?`).join(', ');
+      const sql = `UPDATE ${table} SET ${setClause}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+      
+      console.log('🔄 D1 UPDATE:', { table, id, sql, values });
+      
+      const result = await this.query(sql, [...values, id]);
+      
+      console.log('📊 D1 UPDATE Result:', result);
+      
+      if (result.success !== false) {
+        const updatedRecord = await this.findOne(table, { id });
+        console.log('✅ D1 UPDATE Success:', updatedRecord);
+        return updatedRecord;
+      }
+      
+      console.error('❌ D1 UPDATE Failed:', result);
+      throw new Error(`Failed to update ${table}: ${JSON.stringify(result)}`);
+    } catch (error) {
+      console.error('❌ D1 UPDATE Error:', error);
+      throw error;
     }
-    
-    throw new Error('Failed to update record');
   }
 
   async delete(table: string, id: number) {

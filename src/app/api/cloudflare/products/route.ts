@@ -53,13 +53,28 @@ export async function GET(request: NextRequest) {
           console.warn('Erreur enrichissement produit:', e);
         }
         
+        // Adapter au format attendu par ProductCard
         return {
-          ...product,
-          category: category?.name || null,
-          farm: farm?.name || null,
+          _id: product.id?.toString() || product._id,
+          name: product.name,
+          description: product.description || '',
+          category: category?.name || 'Sans catégorie',
+          farm: farm?.name || 'Sans farm',
+          image: product.image_url || '',
+          video: product.video_url || '',
+          prices: {
+            "5g": parseFloat(product.price) || 0,
+            "10g": parseFloat(product.price) * 1.8 || 0,
+            "25g": parseFloat(product.price) * 4 || 0,
+            "50g": parseFloat(product.price) * 7 || 0,
+            "100g": parseFloat(product.price) * 12 || 0,
+            "200g": parseFloat(product.price) * 20 || 0,
+          },
           images: JSON.parse(product.images || '[]'),
           features: JSON.parse(product.features || '[]'),
           tags: JSON.parse(product.tags || '[]'),
+          stock: product.stock || 0,
+          is_available: product.is_available !== false
         };
       })
     );

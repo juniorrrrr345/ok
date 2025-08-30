@@ -97,7 +97,9 @@ export default function PagesManager() {
       
       const result = await response.json();
       
-      if (result.success) {
+      console.log('📝 Réponse sauvegarde page:', result);
+      
+      if (response.ok && (result.success || result.data)) {
         setSaveStatus('✅ Sauvegardé avec succès !');
         
         // Invalider le cache et revalider les pages
