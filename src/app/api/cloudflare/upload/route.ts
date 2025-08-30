@@ -15,32 +15,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Vérifier le type de fichier
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    // Vérifier le type de fichier (images + vidéos)
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov', 'video/wmv'];
+    const allowedTypes = [...allowedImageTypes, ...allowedVideoTypes];
+    
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Type de fichier non supporté. Utilisez JPG, PNG, GIF ou WebP.' },
+        { error: 'Type de fichier non supporté. Images: JPG, PNG, GIF, WebP. Vidéos: MP4, WebM, OGG, AVI, MOV, WMV.' },
         { status: 400 }
       );
     }
 
-    // Vérifier la taille du fichier (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Vérifier la taille du fichier (images: 10MB, vidéos: 500MB)
+    const isVideo = allowedVideoTypes.includes(file.type);
+    const maxSize = isVideo ? 500 * 1024 * 1024 : 10 * 1024 * 1024; // 500MB pour vidéos, 10MB pour images
+    
     if (file.size > maxSize) {
+      const maxSizeText = isVideo ? '500MB' : '10MB';
       return NextResponse.json(
-        { error: 'Fichier trop volumineux. Taille maximale: 10MB.' },
+        { error: `Fichier trop volumineux. Taille maximale: ${maxSizeText}.` },
         { status: 400 }
       );
     }
 
-    // Upload vers R2
-    const imageUrl = await r2Client.uploadImage(file, folder);
+    // Upload vers R2 (images ou vidéos)
+    const mediaUrl = isVideo 
+      ? await r2Client.uploadVideo(file, folder)
+      : await r2Client.uploadImage(file, folder);
 
     return NextResponse.json({
       success: true,
-      url: imageUrl,
-      secure_url: imageUrl, // Pour compatibilité avec Cloudinary
-      public_id: imageUrl.split('/').pop(), // Pour compatibilité
+      url: mediaUrl,
+      secure_url: mediaUrl, // Pour compatibilité avec Cloudinary
+      public_id: mediaUrl.split('/').pop(), // Pour compatibilité
+      resource_type: isVideo ? 'video' : 'image', // Type de média
+      format: file.name.split('.').pop(), // Extension du fichier
     });
 
   } catch (error) {

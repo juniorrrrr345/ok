@@ -78,6 +78,19 @@ class CloudflareR2Client {
     return this.uploadFile(file, key, file instanceof File ? file.type : 'image/jpeg');
   }
 
+  // Upload de vidéo
+  async uploadVideo(file: File | Buffer, folder: string = 'videos'): Promise<string> {
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 15);
+    const extension = file instanceof File 
+      ? file.name.split('.').pop() || 'mp4'
+      : 'mp4';
+    
+    const key = `${folder}/${timestamp}-${randomId}.${extension}`;
+    
+    return this.uploadFile(file, key, file instanceof File ? file.type : 'video/mp4');
+  }
+
   // Supprimer un fichier
   async deleteFile(key: string): Promise<boolean> {
     try {

@@ -46,7 +46,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/accounts/7979421604bd07b3bd34
   -d @database/schema.sql
 ```
 
-## 📦 Stockage R2
+## 📦 Stockage R2 (Images + Vidéos)
 
 ### Créer un bucket R2 :
 
@@ -56,6 +56,11 @@ curl -X POST "https://api.cloudflare.com/client/v4/accounts/7979421604bd07b3bd34
   -H "Content-Type: application/json" \
   -d '{"name": "boutique-images"}'
 ```
+
+### Formats supportés :
+
+**Images :** JPG, PNG, GIF, WebP (max 10MB)
+**Vidéos :** MP4, WebM, OGG, AVI, MOV, WMV (max 500MB)
 
 ### Configuration des clés R2 :
 
@@ -69,7 +74,7 @@ Les nouvelles routes API sont disponibles :
 
 - `GET/POST /api/cloudflare/products` - Gestion des produits
 - `GET/PUT /api/cloudflare/settings` - Paramètres de la boutique  
-- `POST/DELETE /api/cloudflare/upload` - Upload d'images vers R2
+- `POST/DELETE /api/cloudflare/upload` - Upload d'images ET vidéos vers R2
 
 ## 📋 Migration depuis MongoDB
 
@@ -86,9 +91,10 @@ Si vous migrez depuis MongoDB, voici le mapping :
 
 | Cloudinary | Cloudflare R2 |
 |------------|---------------|
-| `cloudinary.uploader.upload()` | `r2Client.uploadImage()` |
+| `cloudinary.uploader.upload()` | `r2Client.uploadImage()` / `r2Client.uploadVideo()` |
 | `cloudinary.uploader.destroy()` | `r2Client.deleteFile()` |
 | `cloudinary.url()` | `r2Client.getPublicUrl()` |
+| Images seulement | **Images + Vidéos supportées** |
 
 ## ⚡ Avantages Cloudflare
 

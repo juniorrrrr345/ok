@@ -1,3 +1,5 @@
+import MediaDisplay from './MediaDisplay';
+
 interface Product {
   _id: string;
   name: string;
