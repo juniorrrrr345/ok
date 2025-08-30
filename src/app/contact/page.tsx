@@ -8,12 +8,26 @@ export const revalidate = 10;
 
 async function getContactData() {
   try {
-    // Données par défaut en attendant l'implémentation Cloudflare
-    return {
-      settings: {},
-      contactPage: { title: 'Contact', content: 'Contactez-nous pour toute question.' },
-      socialLinks: []
-    };
+    // Récupérer depuis Cloudflare D1 via les API
+    const [settingsRes, pageRes, socialRes] = await Promise.allSettled([
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/settings`, { cache: 'no-store' }),
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/pages/contact`, { cache: 'no-store' }),
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links`, { cache: 'no-store' })
+    ]);
+
+    const settings = settingsRes.status === 'fulfilled' && settingsRes.value.ok 
+      ? await settingsRes.value.json() 
+      : {};
+
+    const contactPage = pageRes.status === 'fulfilled' && pageRes.value.ok 
+      ? await pageRes.value.json() 
+      : { title: 'Contact', content: 'Contactez-nous pour toute question.' };
+
+    const socialLinks = socialRes.status === 'fulfilled' && socialRes.value.ok 
+      ? await socialRes.value.json() 
+      : [];
+
+    return { settings, contactPage, socialLinks };
   } catch (error) {
     console.error('Erreur récupération données contact:', error);
     return {

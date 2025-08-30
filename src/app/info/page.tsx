@@ -8,11 +8,21 @@ export const revalidate = 10;
 
 async function getInfoContent() {
   try {
-    // Données par défaut en attendant l'implémentation Cloudflare
-    return {
-      settings: {},
-      infoPage: { title: 'Informations', content: 'Bienvenue dans notre boutique !' }
-    };
+    // Récupérer depuis Cloudflare D1 via les API
+    const [settingsRes, pageRes] = await Promise.allSettled([
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/settings`, { cache: 'no-store' }),
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/pages/info`, { cache: 'no-store' })
+    ]);
+
+    const settings = settingsRes.status === 'fulfilled' && settingsRes.value.ok 
+      ? await settingsRes.value.json() 
+      : {};
+
+    const infoPage = pageRes.status === 'fulfilled' && pageRes.value.ok 
+      ? await pageRes.value.json() 
+      : { title: 'Informations', content: 'Bienvenue dans notre boutique !' };
+
+    return { settings, infoPage };
   } catch (error) {
     console.error('Erreur récupération contenu info:', error);
     return {

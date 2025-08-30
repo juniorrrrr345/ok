@@ -25,16 +25,41 @@ interface Settings {
 
 async function getSocialData() {
   try {
-    // Données par défaut temporaires
-    const defaultLinks = [
-      { _id: '1', name: 'Instagram', url: '#', icon: '📷', color: '#E4405F', isActive: true, order: 1 },
-      { _id: '2', name: 'Facebook', url: '#', icon: '👍', color: '#1877F2', isActive: true, order: 2 },
-      { _id: '3', name: 'WhatsApp', url: '#', icon: '💬', color: '#25D366', isActive: true, order: 3 }
-    ];
+    // Récupérer depuis Cloudflare D1 via les API
+    const [socialRes, settingsRes] = await Promise.allSettled([
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/social-links`, { cache: 'no-store' }),
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'}/api/cloudflare/settings`, { cache: 'no-store' })
+    ]);
+
+    const socialLinks = socialRes.status === 'fulfilled' && socialRes.value.ok 
+      ? await socialRes.value.json() 
+      : [];
+
+    const settings = settingsRes.status === 'fulfilled' && settingsRes.value.ok 
+      ? await settingsRes.value.json() 
+      : null;
+
+    // Mapper les données D1 vers le format attendu par la page
+    const mappedLinks = socialLinks.map((link: any) => ({
+      _id: link.id?.toString() || link._id,
+      name: link.name,
+      url: link.url,
+      icon: link.icon || '🔗',
+      color: link.color || '#3B82F6',
+      isActive: link.is_active !== false,
+      order: link.sort_order || 0
+    }));
+
+    const mappedSettings = settings ? {
+      shopTitle: settings.shop_name || 'FULL OPTION IDF',
+      whatsappLink: settings.contact_info || '#',
+      email: settings.contact_info || '',
+      address: settings.shop_description || '',
+    } : null;
     
     return {
-      socialLinks: defaultLinks as SocialLink[],
-      settings: { shopTitle: 'FULL OPTION IDF', whatsappLink: '#' } as Settings | null
+      socialLinks: mappedLinks as SocialLink[],
+      settings: mappedSettings as Settings | null
     };
   } catch (error) {
     console.error('Erreur chargement social:', error);
