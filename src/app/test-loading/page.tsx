@@ -55,15 +55,13 @@ export default function TestLoading() {
                       style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))' }}
                     />
                   ) : (
-                    <span className="text-8xl animate-bounce filter drop-shadow-2xl">🔥</span>
+                    <h1 className="text-6xl font-black text-white animate-pulse">
+                      CALITEK
+                    </h1>
                   )}
                 </div>
               </div>
             </div>
-            
-            <h1 className="text-5xl sm:text-7xl font-black mb-2 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-transparent bg-clip-text animate-pulse">
-              CALITEK
-            </h1>
             
             <p className="text-2xl text-white/90 mb-8 font-light">
               Chargement en cours...
