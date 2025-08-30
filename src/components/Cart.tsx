@@ -8,46 +8,33 @@ import { toast } from 'react-hot-toast';
 
 export default function Cart() {
   const { items, isOpen, setIsOpen, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore();
-  const [whatsappNumber, setWhatsappNumber] = useState('33612345678'); // Numéro par défaut
+  const [orderLink, setOrderLink] = useState('#'); // Lien de commande par défaut
   
   useEffect(() => {
-    // Charger le numéro WhatsApp depuis les settings Cloudflare
+    // Charger le lien de commande depuis les settings Cloudflare
     fetch('/api/cloudflare/settings')
       .then(res => res.json())
       .then(data => {
-        console.log('📱 Settings reçus pour WhatsApp:', data);
+        console.log('📱 Settings reçus pour commandes:', data);
         
-        // Priorité 1: whatsapp_number (colonne dédiée)
-        if (data.whatsapp_number) {
-          const cleanNumber = data.whatsapp_number.replace(/[^0-9]/g, '');
-          setWhatsappNumber(cleanNumber);
-          console.log('📱 Numéro WhatsApp configuré:', cleanNumber);
+        // Priorité 1: whatsapp_link (colonne dédiée)
+        if (data.whatsapp_link) {
+          setOrderLink(data.whatsapp_link);
+          console.log('📱 Lien de commande configuré:', data.whatsapp_link);
         }
-        // Priorité 2: whatsapp_link (extraire numéro du lien)
-        else if (data.whatsapp_link) {
-          const match = data.whatsapp_link.match(/wa\.me\/(\d+)/);
-          if (match) {
-            setWhatsappNumber(match[1]);
-            console.log('📱 Numéro extrait du lien:', match[1]);
-          }
-        }
-        // Priorité 3: ancien champ whatsappNumber (compatibilité)
-        else if (data.whatsappNumber) {
-          const cleanNumber = data.whatsappNumber.replace(/[^0-9]/g, '');
-          setWhatsappNumber(cleanNumber);
-          console.log('📱 Numéro WhatsApp (legacy):', cleanNumber);
-        }
-        // Priorité 4: contact_info (fallback)
+        // Priorité 2: contact_info (fallback)
         else if (data.contact_info) {
-          const numberMatch = data.contact_info.match(/(\d{10,15})/);
-          if (numberMatch) {
-            setWhatsappNumber(numberMatch[1]);
-            console.log('📱 Numéro extrait du contact:', numberMatch[1]);
-          }
+          setOrderLink(data.contact_info);
+          console.log('📱 Lien depuis contact_info:', data.contact_info);
+        }
+        // Priorité 3: ancien champ whatsappLink (compatibilité)
+        else if (data.whatsappLink) {
+          setOrderLink(data.whatsappLink);
+          console.log('📱 Lien WhatsApp (legacy):', data.whatsappLink);
         }
       })
       .catch((error) => {
-        console.error('❌ Erreur chargement settings WhatsApp:', error);
+        console.error('❌ Erreur chargement settings commande:', error);
       });
   }, []);
   
@@ -84,11 +71,24 @@ export default function Cart() {
     // Encoder le message pour l'URL
     const encodedMessage = encodeURIComponent(message);
     
-    // Créer l'URL WhatsApp
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    // Construire l'URL selon le type de lien
+    let finalUrl = orderLink;
     
-    // Ouvrir dans une nouvelle fenêtre
-    window.open(whatsappUrl, '_blank');
+    if (orderLink.includes('wa.me')) {
+      // WhatsApp : ajouter le message
+      finalUrl = `${orderLink}?text=${encodedMessage}`;
+    } else if (orderLink.includes('t.me')) {
+      // Telegram : ouvrir le chat
+      finalUrl = orderLink;
+    } else {
+      // Autre lien : ouvrir tel quel
+      finalUrl = orderLink;
+    }
+    
+    console.log('📱 Ouverture lien commande:', finalUrl);
+    
+    // Ouvrir le lien de commande
+    window.open(finalUrl, '_blank');
     
     // Afficher un message de succès
     toast.success('Redirection vers WhatsApp...');
@@ -212,7 +212,7 @@ export default function Cart() {
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.149-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
                 </svg>
-                Commander via WhatsApp
+                Commander
               </button>
               
               <button

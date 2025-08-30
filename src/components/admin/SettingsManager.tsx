@@ -148,40 +148,28 @@ export default function SettingsManager() {
           )}
 
 
-        {/* Contact et réseaux */}
+        {/* Contact et commandes */}
         <div className="bg-gray-900 border border-white/20 rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center">
             <span className="mr-2">📱</span>
-            Contact et réseaux
+            Contact et commandes
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Lien WhatsApp principal
+                Lien de commande
               </label>
               <input
                 type="url"
                 value={settings.whatsappLink}
                 onChange={(e) => updateField('whatsappLink', e.target.value)}
                 className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white"
-                placeholder="https://wa.me/33612345678"
+                placeholder="https://wa.me/33612345678 ou https://t.me/username ou https://instagram.com/username"
               />
-              <p className="text-xs text-gray-400 mt-1">Format: https://wa.me/[code pays][numéro]</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Numéro WhatsApp (pour les commandes)
-              </label>
-              <input
-                type="text"
-                value={settings.whatsappNumber}
-                onChange={(e) => updateField('whatsappNumber', e.target.value)}
-                className="w-full bg-gray-800 border border-white/20 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white"
-                placeholder="33612345678"
-              />
-              <p className="text-xs text-gray-400 mt-1">Format: code pays + numéro (sans espaces ni tirets)</p>
+              <p className="text-xs text-gray-400 mt-1">
+                Lien vers votre méthode de contact préférée (WhatsApp, Telegram, Instagram, etc.)
+              </p>
             </div>
           </div>
         </div>
