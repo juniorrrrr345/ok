@@ -43,7 +43,7 @@ export default function HomePage() {
     const loadThemeForNewVisitors = async () => {
       try {
         // Charger les paramètres depuis l'API pour les nouveaux visiteurs
-        const settingsRes = await fetch('/api/settings', { cache: 'no-store' });
+        const settingsRes = await fetch('/api/cloudflare/settings', { cache: 'no-store' });
         if (settingsRes.ok) {
           const settings = await settingsRes.json();
           

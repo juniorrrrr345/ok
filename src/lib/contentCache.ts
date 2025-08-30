@@ -47,14 +47,14 @@ class ContentCache {
     try {
       console.log('🔄 Rafraîchissement cache Cloudflare D1...');
       
-      // Charger depuis les routes API Cloudflare
+      // Charger depuis les routes API Cloudflare avec cache no-store
       const [settingsRes, productsRes, categoriesRes, farmsRes, socialLinksRes, pagesRes] = await Promise.allSettled([
-        fetch('/api/cloudflare/settings').then(r => r.ok ? r.json() : null),
-        fetch('/api/cloudflare/products').then(r => r.ok ? r.json() : []),
-        fetch('/api/cloudflare/categories').then(r => r.ok ? r.json() : []),
-        fetch('/api/cloudflare/farms').then(r => r.ok ? r.json() : []),
-        fetch('/api/cloudflare/social-links').then(r => r.ok ? r.json() : []),
-        fetch('/api/cloudflare/pages').then(r => r.ok ? r.json() : [])
+        fetch('/api/cloudflare/settings', { cache: 'no-store' }).then(r => r.ok ? r.json() : null),
+        fetch('/api/cloudflare/products', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/categories', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/farms', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/social-links', { cache: 'no-store' }).then(r => r.ok ? r.json() : []),
+        fetch('/api/cloudflare/pages', { cache: 'no-store' }).then(r => r.ok ? r.json() : [])
       ]);
 
       // Extraire les résultats
