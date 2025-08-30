@@ -100,20 +100,56 @@ export default function FarmsManager() {
   };
 
   const handleDelete = async (farmId: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette farm ?')) {
+    const farmName = farms.find(f => f._id === farmId)?.name || 'cette farm';
+    
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${farmName}" ?`)) {
       try {
+        // Suppression optimiste - retirer immédiatement de l'interface
+        const originalFarms = [...farms];
+        setFarms(prev => prev.filter(farm => farm._id !== farmId));
+
+        console.log('🗑️ Suppression farm:', farmId);
+        
         const response = await fetch(`/api/cloudflare/farms/${farmId}`, {
           method: 'DELETE',
         });
 
+        console.log('📡 Réponse suppression:', response.status);
+
         if (response.ok) {
-          loadFarms();
+          console.log('✅ Farm supprimée avec succès');
+          
+          // Afficher message de succès
+          const successMsg = document.createElement('div');
+          successMsg.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-[9999]';
+          successMsg.textContent = `✅ "${farmName}" supprimée avec succès!`;
+          document.body.appendChild(successMsg);
+          
+          setTimeout(() => successMsg.remove(), 3000);
         } else {
-          alert('Erreur lors de la suppression');
+          // En cas d'erreur, restaurer l'état original
+          console.error('❌ Erreur suppression, restauration...');
+          setFarms(originalFarms);
+          
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-[9999]';
+          errorMsg.textContent = `❌ Erreur: Impossible de supprimer "${farmName}"`;
+          document.body.appendChild(errorMsg);
+          
+          setTimeout(() => errorMsg.remove(), 5000);
         }
       } catch (error) {
-        console.error('Erreur:', error);
-        alert('Erreur lors de la suppression');
+        console.error('❌ Erreur suppression farm:', error);
+        
+        // Restaurer en cas d'erreur
+        setFarms(originalFarms);
+        
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'fixed top-4 right-4 bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg z-[9999]';
+        errorMsg.textContent = `❌ Erreur: ${error.message}`;
+        document.body.appendChild(errorMsg);
+        
+        setTimeout(() => errorMsg.remove(), 5000);
       }
     }
   };
