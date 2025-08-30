@@ -146,9 +146,7 @@ export default function Header() {
                   CALITEK
                 </h1>
               )}
-              <p className="text-white/80 text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] font-medium mt-1 sm:mt-2 break-words drop-shadow-sm">
-                Premium
-              </p>
+
             </div>
           </div>
         </>

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '../components/Header';
-// Redéploiement forcé - Nouveau chargement FULL OPTION IDF
+// Redéploiement forcé - Nouveau chargement CALITEK
 import CategoryFilter from '../components/CategoryFilter';
 import ProductCard, { Product } from '../components/ProductCard';
 import ProductDetail from '../components/ProductDetail';
@@ -269,14 +269,14 @@ export default function HomePage() {
               <div className="mb-8">
                 <img 
                   src="https://i.imgur.com/mNencn1.png" 
-                  alt="FULL OPTION IDF" 
+                  alt="CALITEK" 
                   className="h-32 sm:h-40 md:h-48 w-auto mx-auto"
                   style={{ filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.3))' }}
                 />
               </div>
               
               <p className="text-2xl text-white mb-8 font-semibold drop-shadow-lg animate-pulse">
-                FULL OPTION IDF
+                CALITEK
               </p>
               
               {/* Nouvelle barre de chargement style néon */}
@@ -298,7 +298,7 @@ export default function HomePage() {
               
               {/* Footer */}
               <div className="text-white text-sm font-medium drop-shadow-md">
-                <p>© 2025 FULL OPTION IDF</p>
+                <p>© 2025 CALITEK</p>
               </div>
             </div>
           </div>
