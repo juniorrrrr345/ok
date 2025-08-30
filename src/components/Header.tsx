@@ -30,9 +30,9 @@ export default function Header() {
           
           setSettings({
             shopTitle: data.shop_name || 'CALITEK',
-            shopSubtitle: data.shop_description || '',
+            shopSubtitle: '', // Pas de sous-titre
             scrollingText: data.scrolling_text || '',
-            bannerText: data.contact_info || '',
+            bannerText: '', // Pas de bandeau contact dans header
             titleStyle: data.theme_color || 'glow',
             backgroundImage: data.background_image || ''
           });
@@ -101,7 +101,7 @@ export default function Header() {
       {/* N'afficher que si les données sont chargées */}
       {isLoaded && settings && (
         <>
-          {/* Texte défilant - depuis l'admin */}
+          {/* Texte défilant SEULEMENT - depuis l'admin */}
           {settings.scrollingText && settings.scrollingText.trim() && (
             <div className="bg-black/30 backdrop-blur-sm text-white py-0.5 overflow-hidden relative border-b border-white/10">
               <div className="animate-marquee whitespace-nowrap inline-block">
@@ -112,14 +112,7 @@ export default function Header() {
             </div>
           )}
           
-          {/* Bandeau blanc promotionnel - responsive */}
-          {settings.bannerText && settings.bannerText.trim() && (
-            <div className="bg-white/90 backdrop-blur-sm text-black py-1 sm:py-2 px-3 sm:px-4 text-center">
-              <p className="text-black text-responsive-xs font-bold tracking-wide break-words">
-                {settings.bannerText}
-              </p>
-            </div>
-          )}
+          {/* PAS de bandeau contact/WhatsApp dans le header */}
           
           {/* Logo boutique avec bouton panier - responsive optimisé */}
           <div className="bg-black/30 backdrop-blur-md py-2 sm:py-3 md:py-4 px-3 sm:px-4 md:px-6 text-center border-b border-white/10 relative">
