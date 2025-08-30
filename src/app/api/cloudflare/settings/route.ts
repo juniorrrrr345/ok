@@ -59,9 +59,14 @@ export async function PUT(request: NextRequest) {
     if (body.bannerText !== undefined) updateData.contact_info = body.bannerText;
     if (body.loadingText !== undefined) updateData.shop_description = body.loadingText;
     
-    // Gérer WhatsApp dans des colonnes séparées
-    if (body.whatsappLink !== undefined) updateData.whatsapp_link = body.whatsappLink;
-    if (body.whatsappNumber !== undefined) updateData.whatsapp_number = body.whatsappNumber;
+    // Gérer WhatsApp dans des colonnes séparées ET contact_info pour compatibilité
+    if (body.whatsappLink !== undefined) {
+      updateData.whatsapp_link = body.whatsappLink;
+      updateData.contact_info = body.whatsappLink; // Pour compatibilité
+    }
+    if (body.whatsappNumber !== undefined) {
+      updateData.whatsapp_number = body.whatsappNumber;
+    }
     if (body.titleStyle !== undefined) updateData.theme_color = body.titleStyle;
     if (body.backgroundImage !== undefined) updateData.background_image = body.backgroundImage;
     if (body.backgroundOpacity !== undefined) updateData.background_opacity = parseInt(body.backgroundOpacity);

@@ -77,6 +77,32 @@ export default function SettingsManager() {
       if (response.ok) {
         const savedData = await response.json();
         console.log('Données sauvegardées:', savedData);
+        
+        // Recharger les données depuis l'API pour s'assurer qu'elles sont bien sauvegardées
+        setTimeout(async () => {
+          try {
+            const refreshResponse = await fetch('/api/cloudflare/settings');
+            if (refreshResponse.ok) {
+              const refreshedData = await refreshResponse.json();
+              console.log('Données rechargées:', refreshedData);
+              
+              // Mettre à jour l'état avec les données fraîches
+              setSettings({
+                shopTitle: refreshedData.shop_name || '',
+                whatsappLink: refreshedData.whatsapp_link || refreshedData.contact_info || '',
+                whatsappNumber: refreshedData.whatsapp_number || '',
+                titleStyle: refreshedData.theme_color || 'glow',
+                backgroundImage: refreshedData.background_image || '',
+                backgroundOpacity: refreshedData.background_opacity || 20,
+                backgroundBlur: refreshedData.background_blur || 5,
+                scrollingText: refreshedData.shop_description || ''
+              });
+            }
+          } catch (error) {
+            console.error('Erreur rechargement:', error);
+          }
+        }, 500);
+        
         setMessage('✅ Paramètres sauvegardés ! Les changements sont visibles immédiatement sur la boutique');
         setTimeout(() => setMessage(''), 3000);
         
