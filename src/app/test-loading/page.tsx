@@ -3,18 +3,16 @@ import { useState, useEffect } from 'react';
 
 export default function TestLoading() {
   const [showLoading, setShowLoading] = useState(true);
-  const [settings, setSettings] = useState({
-    backgroundImage: '',
-    shop_name: 'CALITEK'
-  });
+  const [settings, setSettings] = useState(null); // null = pas encore chargé
 
   useEffect(() => {
-    // Charger les settings pour le logo
+    // Charger les settings pour le logo IMMÉDIATEMENT
     const loadSettings = async () => {
       try {
-        const response = await fetch('/api/cloudflare/settings');
+        const response = await fetch('/api/cloudflare/settings', { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
+          console.log('📝 Loading - Settings chargés:', data);
           setSettings({
             backgroundImage: data.background_image || '',
             shop_name: data.shop_name || 'CALITEK'
@@ -22,6 +20,11 @@ export default function TestLoading() {
         }
       } catch (error) {
         console.error('Erreur chargement settings loading:', error);
+        // Fallback si erreur
+        setSettings({
+          backgroundImage: '',
+          shop_name: 'CALITEK'
+        });
       }
     };
 
@@ -33,7 +36,7 @@ export default function TestLoading() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (showLoading) {
+  if (showLoading && settings) {
     return (
       <div className="fixed inset-0 z-50" style={{ 
         background: 'radial-gradient(circle at center, #2a2a2a 0%, #0a0a0a 100%)',
