@@ -29,7 +29,7 @@ async function getSocialData() {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ok-git-main-lucas-projects-34f60a70.vercel.app';
     
     const [socialRes, settingsRes] = await Promise.allSettled([
-      fetch(`${baseUrl}/api/cloudflare/social-links/active`, { cache: 'no-store' }),
+      fetch(`${baseUrl}/api/cloudflare/social-links`, { cache: 'no-store' }),
       fetch(`${baseUrl}/api/cloudflare/settings`, { cache: 'no-store' })
     ]);
 
@@ -46,7 +46,21 @@ async function getSocialData() {
       ? await settingsRes.value.json() 
       : null;
 
-    console.log('🌐 Liens sociaux bruts:', socialLinks);
+    console.log('🌐 Liens sociaux bruts depuis API:', socialLinks);
+
+    // Si pas de liens, retourner tableau vide (pas de données par défaut)
+    if (!socialLinks || socialLinks.length === 0) {
+      console.log('🌐 Aucun lien social configuré');
+      return {
+        socialLinks: [],
+        settings: settings ? {
+          shopTitle: settings.shop_name || 'FULL OPTION IDF',
+          whatsappLink: settings.whatsapp_link || settings.contact_info || '#',
+          email: settings.contact_info || '',
+          address: settings.shop_description || '',
+        } : null
+      };
+    }
 
     // Mapper les données D1 vers le format attendu par la page
     const mappedLinks = socialLinks.map((link: any) => ({
@@ -55,7 +69,7 @@ async function getSocialData() {
       url: link.url,
       icon: link.icon || '🔗',
       color: link.color || '#3B82F6',
-      isActive: link.is_active !== false && link.is_active !== "false",
+      isActive: true, // Toujours actif maintenant
       order: link.sort_order || 0
     }));
 
@@ -63,7 +77,7 @@ async function getSocialData() {
 
     const mappedSettings = settings ? {
       shopTitle: settings.shop_name || 'FULL OPTION IDF',
-      whatsappLink: settings.contact_info || '#',
+      whatsappLink: settings.whatsapp_link || settings.contact_info || '#',
       email: settings.contact_info || '',
       address: settings.shop_description || '',
     } : null;
@@ -75,7 +89,7 @@ async function getSocialData() {
   } catch (error) {
     console.error('Erreur chargement social:', error);
     return {
-      socialLinks: [],
+      socialLinks: [], // Tableau vide en cas d'erreur
       settings: null
     };
   }

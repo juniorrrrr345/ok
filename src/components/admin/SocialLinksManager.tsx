@@ -137,18 +137,17 @@ export default function SocialLinksManager() {
         });
 
         if (response.ok) {
-          // Invalider le cache et revalider les pages
-          try {
-            await fetch('/api/cache/invalidate', { method: 'POST' });
-            await fetch('/api/revalidate', { 
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ path: '/social' })
-            });
-            console.log('✅ Cache invalidé après suppression');
-          } catch (error) {
-            console.error('Erreur invalidation cache:', error);
-          }
+          console.log('✅ Suppression réussie pour:', linkName);
+          
+          // Vider TOUS les caches pour éviter les réapparitions
+          localStorage.removeItem('socialLinks');
+          localStorage.removeItem('adminData');
+          sessionStorage.clear();
+          
+          // Forcer un rechargement depuis l'API
+          setTimeout(() => {
+            loadSocialLinks();
+          }, 500);
           
           // Afficher message de succès
           const successMsg = document.createElement('div');
