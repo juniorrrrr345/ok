@@ -6,22 +6,6 @@ import BottomNav from '@/components/BottomNav';
 // Force la revalidation de la page toutes les 10 secondes
 export const revalidate = 10;
 
-async function getSocialData() {
-  try {
-    // Données par défaut en attendant l'implémentation Cloudflare
-    return {
-      settings: {},
-      socialLinks: []
-    };
-  } catch (error) {
-    console.error('Erreur récupération réseaux sociaux:', error);
-    return {
-      settings: {},
-      socialLinks: []
-    };
-  }
-}
-
 interface SocialLink {
   _id: string;
   name: string;
@@ -41,34 +25,16 @@ interface Settings {
 
 async function getSocialData() {
   try {
-    const { db } = await connectToDatabase();
-    
-    const [socialLinks, settings] = await Promise.all([
-      db.collection('socialLinks').find({ isActive: true }).sort({ order: 1 }).toArray(),
-      db.collection('settings').findOne({})
-    ]);
-    
-    console.log('Réseaux sociaux actifs trouvés:', socialLinks.length);
-    
-    // Créer des réseaux sociaux par défaut s'il n'y en a pas
-    if (socialLinks.length === 0) {
-      const defaultLinks = [
-        { name: 'Instagram', url: '#', icon: '📷', color: '#E4405F', isActive: true, order: 1 },
-        { name: 'Facebook', url: '#', icon: '👍', color: '#1877F2', isActive: true, order: 2 },
-        { name: 'WhatsApp', url: '#', icon: '💬', color: '#25D366', isActive: true, order: 3 }
-      ];
-      
-      await db.collection('socialLinks').insertMany(defaultLinks);
-      
-      return {
-        socialLinks: defaultLinks as SocialLink[],
-        settings: settings as Settings | null
-      };
-    }
+    // Données par défaut temporaires
+    const defaultLinks = [
+      { _id: '1', name: 'Instagram', url: '#', icon: '📷', color: '#E4405F', isActive: true, order: 1 },
+      { _id: '2', name: 'Facebook', url: '#', icon: '👍', color: '#1877F2', isActive: true, order: 2 },
+      { _id: '3', name: 'WhatsApp', url: '#', icon: '💬', color: '#25D366', isActive: true, order: 3 }
+    ];
     
     return {
-      socialLinks: socialLinks as SocialLink[],
-      settings: settings as Settings | null
+      socialLinks: defaultLinks as SocialLink[],
+      settings: { shopTitle: 'FULL OPTION IDF', whatsappLink: '#' } as Settings | null
     };
   } catch (error) {
     console.error('Erreur chargement social:', error);
