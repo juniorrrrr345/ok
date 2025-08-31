@@ -18,7 +18,7 @@ interface CachedData {
 class ContentCache {
   private data: any = {};
   private lastUpdate: number = 0;
-  private cacheDuration: number = 5000; // 5 secondes pour temps réel
+  private cacheDuration: number = 300000; // 5 minutes - Optimisé pour temps réel
   private isRefreshing: boolean = false;
 
   constructor() {
@@ -26,7 +26,7 @@ class ContentCache {
       // Charger immédiatement depuis l'API Cloudflare
       this.forceRefresh();
       // Rafraîchir très fréquemment pour temps réel
-      setInterval(() => this.forceRefresh(), 5000); // Toutes les 5 secondes pour temps réel
+      setInterval(() => this.forceRefresh(), 300000); // Toutes les 5 minutes - Optimisé pour temps réel
     }
   }
   

@@ -33,7 +33,7 @@ export function useAdminSync(onDataUpdate: () => void) {
     // Rechargement périodique agressif pour synchronisation
     const interval = setInterval(() => {
       onDataUpdate();
-    }, 2000); // Toutes les 2 secondes
+    }, 30000); // Toutes les 30 secondes - Optimisé
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
